@@ -72,18 +72,15 @@ int main()
 
     glEnable(GL_DEPTH_TEST);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
-    Shaders normalShader("./shaders/vertexShader.glsl", "./shaders/fragmentShader.glsl");
-    Shaders sunShader("./shaders/sunVertexShader.glsl","./shaders/sunFragmentShader.glsl");
-    Shaders skyBoxShader("./shaders/skyBoxVS.glsl", "./shaders/skyBoxFS.glsl");
+    Shaders normalShader("../src/shaders/vertexShader.glsl", "../src/shaders/fragmentShader.glsl");
+    Shaders sunShader("../src/shaders/sunVertexShader.glsl","../src/shaders/sunFragmentShader.glsl");
+    Shaders skyBoxShader("../src/shaders/skyBoxVS.glsl", "../src/shaders/skyBoxFS.glsl");
     Sphere sun(0.4f);
-
     unsigned int earthTexture, moonTexture, sunTexture;
 
-    if(!getTextureID(earthTexture, "./img/earth.jpg")) return 0;
-    if(!getTextureID(moonTexture,"./img/moon.jpg")) return 0;
-    if(!getTextureID(sunTexture, "./img/sun.jpeg")) return 0;
-
+    if(!getTextureID(earthTexture, "../img/earth.jpg")) return 0;
+    if(!getTextureID(moonTexture,"../img/moon.jpg")) return 0;
+    if(!getTextureID(sunTexture, "../img/sun.jpeg")) return 0;
     unsigned int VBO, VAO, EBO;
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
@@ -116,7 +113,7 @@ int main()
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5*sizeof(float ), (void*)(3*sizeof(float)) );
     glEnableVertexAttribArray(1);
 
-    skyBoxInit("./img/skybox");
+    skyBoxInit("../img/skybox");
     // render loop
     // -----------
 
