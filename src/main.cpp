@@ -20,7 +20,8 @@ void processInput(GLFWwindow *window);
 void mouse_callback(GLFWwindow *window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* windows, double xOffset, double yOffset);
 bool getTextureID(unsigned int &ID, char *s);
-void renderSkybox(glm::mat4 view, glm::mat4 projection);
+void renderSkybox();
+void renderFloor();
 
 // settings
 const unsigned int SCR_WIDTH = 800;
@@ -29,6 +30,7 @@ const unsigned int SCR_HEIGHT = 600;
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 Shaders *floorShader, *skyBoxShader;
 
+glm::mat4 projection, view, model;
 
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
@@ -98,22 +100,12 @@ int main()
         glClearColor(0.1, 0.1, 0.1, 1.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        glm::mat4 projection = glm::perspective(glm::radians(camera.zoom), (float)SCR_WIDTH/SCR_HEIGHT, 0.1f, 100.0f);
-        glm::mat4 view = camera.getViewMat();
-        glm::mat4 model;
+        projection = glm::perspective(glm::radians(camera.zoom), (float)SCR_WIDTH/SCR_HEIGHT, 0.1f, 100.0f);
+        view = camera.getViewMat();
+        model = glm::mat4();
 
-        floorShader->useProgram();
-        floorShader->setMat4("view", view);
-        floorShader->setMat4("projection", projection);
-        floorShader->setMat4("model", model);
-        floorShader->setVec3("lightColor", 1.0f, 1.0f, 1.0f);
-        floorShader->setVec3("lightPos", .0, .100, .0);
-        floorShader->setVec3("cameraPos", camera.getPosition());
-        floorShader->setFloat("roughness", 1.8);
-        floorShader->setFloat("fresnel", .1);
-        drawFloor();
-
-        renderSkybox(view, projection);
+        renderFloor();
+        renderSkybox();
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
         glfwSwapBuffers(window);
@@ -127,7 +119,20 @@ int main()
     return 0;
 }
 
-void renderSkybox(glm::mat4 view, glm::mat4 projection){
+void renderFloor(){
+    floorShader->useProgram();
+    floorShader->setMat4("view", view);
+    floorShader->setMat4("projection", projection);
+    floorShader->setMat4("model", model);
+    floorShader->setVec3("lightColor", 1.0f, 1.0f, 1.0f);
+    floorShader->setVec3("lightPos", .0, .100, .0);
+    floorShader->setVec3("cameraPos", camera.getPosition());
+    floorShader->setFloat("roughness", 1.8);
+    floorShader->setFloat("fresnel", .1);
+    drawFloor();
+}
+
+void renderSkybox(){
     skyBoxShader->useProgram();
     view = glm::mat4(glm::mat3(camera.getViewMat()));
     skyBoxShader->setMat4("view", view);
