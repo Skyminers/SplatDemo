@@ -1,10 +1,9 @@
 #version 330 core
 out vec4 FragColor;
-in vec2 texCoord;
+in vec3 ourColor;
 in vec3 normal;
 in vec3 worldPos;
 
-uniform sampler2D aTexture;
 uniform vec3 lightColor;
 uniform vec3 lightPos;
 uniform vec3 cameraPos;
@@ -25,17 +24,15 @@ void main() {
 
     vec3 viewDir = normalize(cameraPos - worldPos);
     float speculat = cookTorranceSpec(
-        lightDir,
-        viewDir,
-        norm,
-        roughness,
-        fresnel);
+    lightDir,
+    viewDir,
+    norm,
+    roughness,
+    fresnel);
 
-    vec3 result = (global + diffuse + speculat);
+    vec3 result = (global + diffuse + speculat) * ourColor;
 
-    vec4 color = texture(aTexture, texCoord);
-
-    FragColor = vec4(result, 1.0) * color ;//vec4(1.0, 0.5, 0.2, 1.0);
+    FragColor = vec4(result, 1.0);//vec4(1.0, 0.5, 0.2, 1.0);
 }
 
 float cookTorranceSpec(vec3 lightDir, vec3 viewDir, vec3 surfaceNormal, float r, float f){

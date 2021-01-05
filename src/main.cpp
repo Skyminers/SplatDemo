@@ -8,8 +8,8 @@
 #include "stb/stb_image.h"
 #include "Shaders.h"
 #include "Camera.h"
-#include "Sphere.h"
 #include "skyBox.h"
+#include "floor.h"
 #include <iostream>
 #include <vector>
 
@@ -20,17 +20,15 @@ void processInput(GLFWwindow *window);
 void mouse_callback(GLFWwindow *window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* windows, double xOffset, double yOffset);
 bool getTextureID(unsigned int &ID, char *s);
+void renderSkybox(glm::mat4 view, glm::mat4 projection);
 
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
-const float aroundTime1 = 10.0f;
-const float aroundTime2 = 8.0f;
-const float aroundTime3 = 6.0f;
-const float selfAroundTime = 10.0f;
-
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+Shaders *floorShader, *skyBoxShader;
+
 
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
@@ -72,60 +70,19 @@ int main()
 
     glEnable(GL_DEPTH_TEST);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    Shaders normalShader("../src/shaders/vertexShader.glsl", "../src/shaders/fragmentShader.glsl");
-    Shaders sunShader("../src/shaders/sunVertexShader.glsl","../src/shaders/sunFragmentShader.glsl");
-    Shaders skyBoxShader("../src/shaders/skyBoxVS.glsl", "../src/shaders/skyBoxFS.glsl");
-    Sphere sun(0.4f);
-    unsigned int earthTexture, moonTexture, sunTexture;
 
-    if(!getTextureID(earthTexture, "../img/earth.jpg")) return 0;
-    if(!getTextureID(moonTexture,"../img/moon.jpg")) return 0;
-    if(!getTextureID(sunTexture, "../img/sun.jpeg")) return 0;
-    unsigned int VBO, VAO, EBO;
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
+    floorShader = new Shaders("../src/shaders/floorVS.glsl", "../src/shaders/floorFS.glsl");
+    skyBoxShader = new Shaders("../src/shaders/skyBoxVS.glsl", "../src/shaders/skyBoxFS.glsl");
 
-    glBindVertexArray(VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sun.getVertexSize()*sizeof(float ), sun.getVertexAddress(), GL_STATIC_DRAW);
+    unsigned int floorTexture;
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sun.getIndicesSize()*sizeof(int ), sun.getIndicesAddress(), GL_STATIC_DRAW);
+    if(!getTextureID(floorTexture, "../img/floor.jpg")) return 0;
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5*sizeof(float), 0);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5*sizeof(float), (void*)(3*sizeof(float)) );
-    glEnableVertexAttribArray(1);
-
-    glBindVertexArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-    unsigned int sunVAO;
-    glGenVertexArrays(1, &sunVAO);
-    glBindVertexArray(sunVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5*sizeof(float ), 0);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5*sizeof(float ), (void*)(3*sizeof(float)) );
-    glEnableVertexAttribArray(1);
 
     skyBoxInit("../img/skybox");
+    floorInit();
     // render loop
     // -----------
-
-    glm::mat4 rotate1;
-    glm::mat4 rotate2;
-    glm::mat4 rotateSate;
-    glm::mat4 selfRotation;
-
-    glm::vec3 posSp2(-0.8f, -1.3f, -0.9f);
-    glm::vec3 axisSp2 = glm::cross(posSp2, glm::vec3(0, 0, 1.0f));
-    glm::vec3 posSate(0.6f, 0.7f, 0.9f);
-    glm::vec3 axisSate = glm::cross(posSate, glm::vec3(0,0,1.0f));
 
     while (!glfwWindowShouldClose(window))
     {
@@ -141,87 +98,44 @@ int main()
         glClearColor(0.1, 0.1, 0.1, 1.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        Shaders *shader;
-
-        selfRotation = glm::rotate(selfRotation, glm::radians(deltaTime/selfAroundTime*360), glm::vec3(0.2f, 0.1f, 0.4f));
-
-        glBindVertexArray(sunVAO);
-        glBindTexture(GL_TEXTURE_2D, sunTexture);
-
         glm::mat4 projection = glm::perspective(glm::radians(camera.zoom), (float)SCR_WIDTH/SCR_HEIGHT, 0.1f, 100.0f);
         glm::mat4 view = camera.getViewMat();
         glm::mat4 model;
-        model = model * selfRotation;
-        shader = &sunShader;
-        shader->useProgram();
-        shader->setMat4("view", view);
-        shader->setMat4("projection", projection);
-        shader->setMat4("model", model);
 
-        glDrawElements(GL_TRIANGLES, sun.getIndicesSize(), GL_UNSIGNED_INT, 0);
+        floorShader->useProgram();
+        floorShader->setMat4("view", view);
+        floorShader->setMat4("projection", projection);
+        floorShader->setMat4("model", model);
+        floorShader->setVec3("lightColor", 1.0f, 1.0f, 1.0f);
+        floorShader->setVec3("lightPos", .0, .100, .0);
+        floorShader->setVec3("cameraPos", camera.getPosition());
+        floorShader->setFloat("roughness", 1.8);
+        floorShader->setFloat("fresnel", .1);
+        drawFloor();
 
-        shader = &normalShader;
-        shader->useProgram();
-        shader->setMat4("view", view);
-        shader->setMat4("projection", projection);
-        shader->setMat4("model", model);
-        shader->setVec3("lightColor",1.0f,1.0f,1.0f);
-        shader->setVec3("lightPos",.0,.0,.0);
-        shader->setVec3("cameraPos",camera.getPosition());
-        shader->setFloat("roughness", 1.8);
-        shader->setFloat("fresnel",.1);
-        glBindVertexArray(VAO);
-        glBindTexture(GL_TEXTURE_2D, earthTexture);
-
-        rotate1 = glm::rotate(rotate1, glm::radians(deltaTime/aroundTime1*360), glm::vec3(0.0f, 1.0f, 0.0f));
-        model = rotate1;
-        model = glm::translate(model, glm::vec3(3.0f, 0, 0));
-        model = model * selfRotation;
-        shader->setMat4("model", model);
-
-        glDrawElements(GL_TRIANGLES, sun.getIndicesSize(), GL_UNSIGNED_INT, 0);
-
-        glBindTexture(GL_TEXTURE_2D, moonTexture);
-        model = rotate1;
-        model = glm::translate(model, glm::vec3(3.0f,0,0));
-        rotateSate = glm::rotate(rotateSate, glm::radians(deltaTime/aroundTime3*360), axisSate);
-        model = model * rotateSate;
-        model = glm::translate(model, posSate);
-        model = model * selfRotation;
-        model = glm::scale(model, glm::vec3(0.3f, 0.3f, 0.3f));
-        shader->setMat4("model", model);
-
-        glDrawElements(GL_TRIANGLES, sun.getIndicesSize(), GL_UNSIGNED_INT, 0);
-
-        rotate2 = glm::rotate(rotate2, glm::radians(deltaTime/aroundTime2*360), axisSp2);
-        model = rotate2;
-        model = glm::translate(model, posSp2);
-        model = model * selfRotation;
-        shader->setMat4("model", model);
-
-        glDrawElements(GL_TRIANGLES, sun.getIndicesSize(), GL_UNSIGNED_INT, 0);
-
-        shader = &skyBoxShader;
-        shader->useProgram();
-        view = glm::mat4(glm::mat3(camera.getViewMat()));
-        shader->setMat4("view", view);
-        shader->setMat4("projection", projection);
-        drawSkyBox();
+        renderSkybox(view, projection);
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
 
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
-    glDeleteBuffers(1, &EBO);
 
     // glfw: terminate, clearing all previously allocated GLFW resources.
     // ------------------------------------------------------------------
     glfwTerminate();
     return 0;
 }
+
+void renderSkybox(glm::mat4 view, glm::mat4 projection){
+    skyBoxShader->useProgram();
+    view = glm::mat4(glm::mat3(camera.getViewMat()));
+    skyBoxShader->setMat4("view", view);
+    skyBoxShader->setMat4("projection", projection);
+    drawSkyBox(projection, camera);
+}
+
+
 
 // Read img file and generate ID of texture.
 // -----------------------------------------

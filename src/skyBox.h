@@ -6,6 +6,7 @@
 #define SOLARSYSTEM_SKYBOX_H
 
 #include <string>
+#include <vector>
 
 using namespace std;
 
@@ -59,6 +60,7 @@ float skyboxVertices[] = {
 
 unsigned int skyBoxVAO, skyBoxVBO;
 unsigned int skyBoxTexture;
+Shaders *shader;
 
 void skyBoxInit(string imgPath){
     getSkyBoxID(skyBoxTexture, imgPath);
@@ -71,7 +73,8 @@ void skyBoxInit(string imgPath){
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 }
 
-void drawSkyBox(){
+void drawSkyBox(glm::mat4 projection, Camera camera){
+
     glDepthFunc(GL_LEQUAL);
     glActiveTexture(GL_TEXTURE0);
     glBindVertexArray(skyBoxVAO);

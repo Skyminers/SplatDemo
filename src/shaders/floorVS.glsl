@@ -1,8 +1,8 @@
 #version 330 core
 layout (location = 0) in vec3 aPos;
-layout (location = 1) in vec2 aTexCoord;
+layout (location = 1) in vec3 aColor;
 
-out vec2 texCoord;
+out vec3 ourColor;
 out vec3 normal;
 out vec3 worldPos;
 
@@ -14,9 +14,7 @@ void main() {
     gl_Position = model * vec4(aPos, 1);
     worldPos = vec3(gl_Position);
 
-    vec4 centerPosition = model * vec4(vec3(.0,.0,.0), 1);
-
-    normal = vec3(gl_Position - centerPosition);
+    normal = vec3(0,1,0);
     gl_Position = projection * view * gl_Position;
-    texCoord = aTexCoord;
+    ourColor = aColor;
 }
