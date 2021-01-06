@@ -10,6 +10,7 @@
 #include "Camera.h"
 #include "skyBox.h"
 #include "floor.h"
+#include "Player.h"
 #include <iostream>
 #include <vector>
 
@@ -34,6 +35,8 @@ glm::mat4 projection, view, model;
 
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
+
+const unsigned int PlayerNum = 1;
 
 int main()
 {
@@ -76,13 +79,17 @@ int main()
     floorShader = new Shaders("../src/shaders/floorVS.glsl", "../src/shaders/floorFS.glsl");
     skyBoxShader = new Shaders("../src/shaders/skyBoxVS.glsl", "../src/shaders/skyBoxFS.glsl");
 
-    unsigned int floorTexture;
+//    unsigned int floorTexture;
+//
+//    if(!getTextureID(floorTexture, "../img/floor.jpg")) return 0;
 
-    if(!getTextureID(floorTexture, "../img/floor.jpg")) return 0;
 
-
-    skyBoxInit("../img/skybox");
+    skyBoxInit("../data/texture/skybox");
     floorInit();
+    for (int i = 1; i <= PlayerNum; ++i) {
+        Player::playerQueue.push_back(new Player(glm::vec3(i * 10, 0, 0)));
+    }
+    Player::renderInit();
     // render loop
     // -----------
 
@@ -104,6 +111,9 @@ int main()
         view = camera.getViewMat();
         model = glm::mat4();
 
+        for (auto player : Player::playerQueue) {
+            player->render(projection, view);
+        }
         renderFloor();
         renderSkybox();
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
