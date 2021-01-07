@@ -1,0 +1,27 @@
+[
+{
+  "directory": "D:/College/junior_f/CG/project/SplatDemo/build",
+  "command": "C:\\PROGRA~1\\MINGW-~1\\X86_64~1.0-P\\mingw64\\bin\\G__~1.EXE  @CMakeFiles/SplatDemo.dir/includes_CXX.rsp -g -std=gnu++14 -o CMakeFiles\\SplatDemo.dir\\src\\main.cpp.obj -c D:\\College\\junior_f\\CG\\project\\SplatDemo\\src\\main.cpp",
+  "file": "D:/College/junior_f/CG/project/SplatDemo/src/main.cpp"
+},
+{
+  "directory": "D:/College/junior_f/CG/project/SplatDemo/build",
+  "command": "C:\\PROGRA~1\\MINGW-~1\\X86_64~1.0-P\\mingw64\\bin\\gcc.exe  @CMakeFiles/SplatDemo.dir/includes_C.rsp -g -o CMakeFiles\\SplatDemo.dir\\src\\glad.c.obj -c D:\\College\\junior_f\\CG\\project\\SplatDemo\\src\\glad.c",
+  "file": "D:/College/junior_f/CG/project/SplatDemo/src/glad.c"
+},
+{
+  "directory": "D:/College/junior_f/CG/project/SplatDemo/build",
+  "command": "C:\\PROGRA~1\\MINGW-~1\\X86_64~1.0-P\\mingw64\\bin\\G__~1.EXE  @CMakeFiles/SplatDemo.dir/includes_CXX.rsp -g -std=gnu++14 -o CMakeFiles\\SplatDemo.dir\\src\\Shaders.cpp.obj -c D:\\College\\junior_f\\CG\\project\\SplatDemo\\src\\Shaders.cpp",
+  "file": "D:/College/junior_f/CG/project/SplatDemo/src/Shaders.cpp"
+},
+{
+  "directory": "D:/College/junior_f/CG/project/SplatDemo/build",
+  "command": "C:\\PROGRA~1\\MINGW-~1\\X86_64~1.0-P\\mingw64\\bin\\G__~1.EXE  @CMakeFiles/SplatDemo.dir/includes_CXX.rsp -g -std=gnu++14 -o CMakeFiles\\SplatDemo.dir\\src\\Camera.cpp.obj -c D:\\College\\junior_f\\CG\\project\\SplatDemo\\src\\Camera.cpp",
+  "file": "D:/College/junior_f/CG/project/SplatDemo/src/Camera.cpp"
+},
+{
+  "directory": "D:/College/junior_f/CG/project/SplatDemo/build",
+  "command": "C:\\PROGRA~1\\MINGW-~1\\X86_64~1.0-P\\mingw64\\bin\\G__~1.EXE  @CMakeFiles/SplatDemo.dir/includes_CXX.rsp -g -std=gnu++14 -o CMakeFiles\\SplatDemo.dir\\src\\Player.cpp.obj -c D:\\College\\junior_f\\CG\\project\\SplatDemo\\src\\Player.cpp",
+  "file": "D:/College/junior_f/CG/project/SplatDemo/src/Player.cpp"
+}
+]

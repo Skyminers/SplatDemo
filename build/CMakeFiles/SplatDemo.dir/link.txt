@@ -1,0 +1,3 @@
+"C:\Program Files\CMake\bin\cmake.exe" -E rm -f CMakeFiles\SplatDemo.dir/objects.a
+C:\PROGRA~1\MINGW-~1\X86_64~1.0-P\mingw64\bin\ar.exe cr CMakeFiles\SplatDemo.dir/objects.a @CMakeFiles\SplatDemo.dir\objects1.rsp
+C:\PROGRA~1\MINGW-~1\X86_64~1.0-P\mingw64\bin\G__~1.EXE -g -Wl,--whole-archive CMakeFiles\SplatDemo.dir/objects.a -Wl,--no-whole-archive -o SplatDemo.exe -Wl,--out-implib,libSplatDemo.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\SplatDemo.dir\linklibs.rsp

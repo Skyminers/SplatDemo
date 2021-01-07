@@ -3,6 +3,7 @@
 //
 
 #include "Player.h"
+#include <cstring>
 
 vector<Bullet*> Bullet::bulletQueue;
 vector<Player*> Player::playerQueue;

@@ -8,8 +8,11 @@ if(WIN32)
 
     link_directories(${PROJECT_SOURCE_DIR}/lib/windows)
 
-    add_executable(SplatDemo ${PROJECT_SOURCE_DIR}/src/main.cpp ${PROJECT_SOURCE_DIR}/src/glad.c
-            ${PROJECT_SOURCE_DIR}/src/Shaders.cpp ${PROJECT_SOURCE_DIR}/src/Camera.cpp ${PROJECT_SOURCE_DIR}/src/Sphere.cpp)
+    add_executable(SplatDemo    ${PROJECT_SOURCE_DIR}/src/main.cpp 
+                                ${PROJECT_SOURCE_DIR}/src/glad.c
+                                ${PROJECT_SOURCE_DIR}/src/Shaders.cpp 
+                                ${PROJECT_SOURCE_DIR}/src/Camera.cpp 
+                                ${PROJECT_SOURCE_DIR}/src/Player.cpp)
 
     target_link_libraries(SplatDemo glfw3)
 endif()
@@ -25,7 +28,14 @@ if(APPLE)
 
     # 执行编译命令
     # 这个glad.c在第2步中说过要拉到项目中，注意路径
-    set(SOURCE_FILES src/glad.c src/main.cpp src/Shaders.cpp src/Camera.cpp src/skyBox.h src/floor.h src/Player.cpp src/Player.h)
+    set(SOURCE_FILES    src/glad.c 
+                        src/main.cpp 
+                        src/Shaders.cpp 
+                        src/Camera.cpp 
+                        src/skyBox.h 
+                        src/floor.h 
+                        src/Player.cpp 
+                        src/Player.h)
 
     add_executable(SplatDemo ${SOURCE_FILES})
 
