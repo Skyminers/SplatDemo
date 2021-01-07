@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.17)
+cmake_minimum_required(VERSION 3.15)
 project(SplatDemo)
 
 set(CMAKE_CXX_STANDARD 14)
@@ -25,7 +25,7 @@ if(APPLE)
 
     # 执行编译命令
     # 这个glad.c在第2步中说过要拉到项目中，注意路径
-    set(SOURCE_FILES src/glad.c src/main.cpp src/Shaders.cpp src/Camera.cpp src/skyBox.h src/floor.h)
+    set(SOURCE_FILES src/glad.c src/main.cpp src/Shaders.cpp src/Camera.cpp src/skyBox.h src/floor.h src/Player.cpp src/Player.h)
 
     add_executable(SplatDemo ${SOURCE_FILES})
 
