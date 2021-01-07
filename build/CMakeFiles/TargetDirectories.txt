@@ -1,3 +1,0 @@
-D:/College/junior_f/CG/project/SplatDemo/build/CMakeFiles/edit_cache.dir
-D:/College/junior_f/CG/project/SplatDemo/build/CMakeFiles/SplatDemo.dir
-D:/College/junior_f/CG/project/SplatDemo/build/CMakeFiles/rebuild_cache.dir
