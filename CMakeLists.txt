@@ -4,7 +4,8 @@ project(SplatDemo)
 set(CMAKE_CXX_STANDARD 14)
 
 if(WIN32)
-    include_directories(${PROJECT_SOURCE_DIR}/include)
+    include_directories(${PROJECT_SOURCE_DIR}/include
+                        ${PROJECT_SOURCE_DIR}/src/include)
 
     link_directories(${PROJECT_SOURCE_DIR}/lib/windows)
 
@@ -12,14 +13,20 @@ if(WIN32)
                                 ${PROJECT_SOURCE_DIR}/src/glad.c
                                 ${PROJECT_SOURCE_DIR}/src/Shaders.cpp 
                                 ${PROJECT_SOURCE_DIR}/src/Camera.cpp 
-                                ${PROJECT_SOURCE_DIR}/src/Player.cpp)
+                                ${PROJECT_SOURCE_DIR}/src/Player.cpp
+                                ${PROJECT_SOURCE_DIR}/src/GameWindow.cpp
+                                ${PROJECT_SOURCE_DIR}/src/Renderer.cpp
+                                ${PROJECT_SOURCE_DIR}/src/skybox.cpp
+                                ${PROJECT_SOURCE_DIR}/src/floor.cpp
+                  )
 
     target_link_libraries(SplatDemo glfw3)
 endif()
 
 if(APPLE)
 
-    include_directories(${PROJECT_SOURCE_DIR}/include)
+    include_directories(${PROJECT_SOURCE_DIR}/include
+                        ${PROJECT_SOURCE_DIR}/src/include)
 
     # 添加目标链接
     set(GLEW_LINK /usr/local/Cellar/glew/2.2.0/lib/libGLEW.2.2.dylib)
@@ -32,10 +39,12 @@ if(APPLE)
                         src/main.cpp 
                         src/Shaders.cpp 
                         src/Camera.cpp 
-                        src/skyBox.h 
-                        src/floor.h 
                         src/Player.cpp 
-                        src/Player.h)
+                        src/GameWindow.cpp
+                        src/Renderer.cpp
+                        src/skybox.cpp
+                        src/floor.cpp
+       )
 
     add_executable(SplatDemo ${SOURCE_FILES})
 

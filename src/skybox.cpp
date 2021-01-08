@@ -1,18 +1,11 @@
-//
-// Created by 刘一辰 on 2020/12/22.
-//
-
-#ifndef SOLARSYSTEM_SKYBOX_H
-#define SOLARSYSTEM_SKYBOX_H
-
+#define STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_STATIC
+#include <skybox.h>
 #include <string>
 #include <vector>
+#include <stb/stb_image.h>
 
 using namespace std;
-
-void skyBoxInit();
-void drawSkyBox();
-bool getSkyBoxID(unsigned int &ID, string path);
 
 float skyboxVertices[] = {
         -1.0f,  1.0f, -1.0f,
@@ -74,7 +67,6 @@ void skyBoxInit(string imgPath){
 }
 
 void drawSkyBox(glm::mat4 projection, Camera camera){
-
     glDepthFunc(GL_LEQUAL);
     glActiveTexture(GL_TEXTURE0);
     glBindVertexArray(skyBoxVAO);
@@ -114,6 +106,3 @@ bool getSkyBoxID(unsigned int &ID, string path){
 
     return true;
 }
-
-
-#endif //SOLARSYSTEM_SKYBOX_H

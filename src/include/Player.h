@@ -9,7 +9,7 @@
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include "Shaders.h"
+#include <Shaders.h>
 #include <random>
 
 using namespace std;

@@ -1,11 +1,4 @@
-//
-// Created by 刘一辰 on 2021/1/6.
-//
-
-#ifndef SPLATDEMO_FLOOR_H
-#define SPLATDEMO_FLOOR_H
-
-
+#include <floor.h>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
@@ -43,5 +36,3 @@ void drawFloor(){
     glBindVertexArray(floorVAO);
     glDrawElements(GL_TRIANGLES, sizeof floorElement, GL_UNSIGNED_INT, 0);
 }
-
-#endif //SPLATDEMO_FLOOR_H

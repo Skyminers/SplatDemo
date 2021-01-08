@@ -2,7 +2,7 @@
 // Created by ZzZZCHS on 2021/1/6.
 //
 
-#include "Player.h"
+#include <Player.h>
 #include <cstring>
 
 vector<Bullet*> Bullet::bulletQueue;
