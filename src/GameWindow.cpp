@@ -9,6 +9,7 @@ Camera camera(glm::vec3(0.0f, 15.0f, 0.0f));
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 float currentFrame = 0.0f;
+extern GameLogic game;
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 // ---------------------------------------------------------------------------------------------------------
@@ -138,13 +139,13 @@ void GameWindow::run() {
         model = glm::mat4();
 
         for (auto player = Player::playerQueue.begin(); player != Player::playerQueue.end();) {
-            (*player)->render(projection, view, currentFrame);
-            if ((*player)->die) Player::playerQueue.erase(player);
+            renderPlayer(*player, currentFrame);
+            if (!(*player)->isAlive()) Player::playerQueue.erase(player);
             else player++;
         }
         for (auto bullet = Bullet::bulletQueue.begin(); bullet != Bullet::bulletQueue.end();) {
-            (*bullet)->render(projection, view, currentFrame);
-            if ((*bullet)->die) Bullet::bulletQueue.erase(bullet);
+            renderBullet(*bullet, currentFrame);
+            if (!(*bullet)->isAlive()) Bullet::bulletQueue.erase(bullet);
             else bullet++;
         }
         renderFloor();

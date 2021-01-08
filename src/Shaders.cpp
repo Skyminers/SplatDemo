@@ -1,7 +1,3 @@
-//
-// Created by 刘一辰 on 2020/10/24.
-//
-
 #include <Shaders.h>
 
 void Shaders::useProgram(){glUseProgram(ID);}

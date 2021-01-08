@@ -12,13 +12,13 @@ if(WIN32)
     add_executable(SplatDemo    src/main.cpp 
                                 src/glad.c
                                 src/Shaders.cpp 
-                                src/Camera.cpp 
-                                src/Player.cpp
+                                src/Camera.cpp
+                                src/GameLogic.cpp
                                 src/GameWindow.cpp
                                 src/Renderer.cpp
-                                src/skybox.cpp
-                                src/floor.cpp
-                  )
+                                src/SkyBox.cpp
+                                src/Floor.cpp
+                                src/PlayerView.cpp)
 
     target_link_libraries(SplatDemo glfw3)
 endif()
@@ -38,13 +38,13 @@ if(APPLE)
     set(SOURCE_FILES    src/glad.c 
                         src/main.cpp 
                         src/Shaders.cpp 
-                        src/Camera.cpp 
-                        src/Player.cpp 
+                        src/Camera.cpp
+                        src/GameLogic.cpp
                         src/GameWindow.cpp
                         src/Renderer.cpp
-                        src/skybox.cpp
-                        src/floor.cpp
-       )
+                        src/SkyBox.cpp
+                        src/Floor.cpp
+                        src/PlayerView.cpp)
 
     add_executable(SplatDemo ${SOURCE_FILES})
 

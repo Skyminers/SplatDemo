@@ -1,7 +1,3 @@
-//
-// Created by 刘一辰 on 2020/10/25.
-//
-
 #include <Camera.h>
 
 Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch)
@@ -41,7 +37,6 @@ void Camera::updateCameraVectors(){
         Right = glm::normalize(glm::cross(player->moveDirection, WorldUp));
         Up    = glm::normalize(glm::cross(Right, Front));
     }
-
 }
 
 void Camera::processKey(cameraMovement key, float deltaTime, float nowTime) {

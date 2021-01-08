@@ -1,7 +1,3 @@
-//
-// Created by 刘一辰 on 2020/10/24.
-//
-
 #ifndef GLTEST_SHADERS_H
 #define GLTEST_SHADERS_H
 

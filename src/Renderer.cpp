@@ -1,34 +1,31 @@
 #define STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_STATIC
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <stb/stb_image.h>
 
-#include <Camera.h>
 #include <Renderer.h>
-#include <Shaders.h>
-#include <skybox.h>
-#include <floor.h>
 
 extern Camera camera;
 glm::mat4 projection, view, model;
 
-Shaders *floorShader, *skyBoxShader;
+Shaders *floorShader, *skyBoxShader, *playerShader, *bulletShader;
 
 void ShadersInit() {
     floorShader = new Shaders(  "../src/shaders/floorVS.glsl", 
                                 "../src/shaders/floorFS.glsl");
     skyBoxShader = new Shaders( "../src/shaders/skyBoxVS.glsl", 
                                 "../src/shaders/skyBoxFS.glsl");
+    playerShader = new Shaders("../src/shaders/playerVS.glsl",
+                                "../src/shaders/playerFS.glsl");
+    bulletShader = new Shaders("../src/shaders/playerVS.glsl",
+                                "../src/shaders/playerFS.glsl");
     //    unsigned int floorTexture;
     //    if(!getTextureID(floorTexture, "../img/floor.jpg")) return 0;
     skyBoxInit("../resource/texture/skybox");
     floorInit();
+    bulletRenderInit();
+    playerRenderInit();
 }
 
-void renderFloor(){
+void renderFloor() {
     floorShader->useProgram();
     floorShader->setMat4("view", view);
     floorShader->setMat4("projection", projection);
@@ -41,7 +38,7 @@ void renderFloor(){
     drawFloor();
 }
 
-void renderSkybox(){
+void renderSkybox() {
     skyBoxShader->useProgram();
     view = glm::mat4(glm::mat3(camera.getViewMat()));
     skyBoxShader->setMat4("view", view);
@@ -49,6 +46,35 @@ void renderSkybox(){
     drawSkyBox(projection, camera);
 }
 
+void renderBullet(Bullet* bullet, float time) {
+    bullet->update(time);
+    if (!bullet->isAlive()) return;
+    bulletShader->useProgram();
+    glm::mat4 model;
+    model = glm::translate(model, glm::vec3(0, 1.0f, 0));
+    model = glm::translate(model, bullet->getPos());
+    float ratio = 0.2f;
+    model = glm::scale(model, glm::vec3(ratio, ratio, ratio));
+    bulletShader->setMat4("projection", projection);
+    bulletShader->setMat4("view", view);
+    bulletShader->setMat4("model", model);
+    drawBullet();
+}
+
+void renderPlayer(Player* player, float time) {
+    if (player->isJumping()) player->jumpUpdate(time);
+    playerShader->useProgram();
+    glm::mat4 model;
+    float ratio = (float)player->HP() / 100.0f;
+    model = glm::translate(model, glm::vec3(0, ratio, 0));
+    model = glm::translate(model, player->getPos());
+    model = glm::scale(model, glm::vec3(ratio, ratio, ratio));
+    model = glm::rotate(model, glm::radians(player->rotateAngle()), glm::vec3(0, 1, 0));
+    playerShader->setMat4("projection", projection);
+    playerShader->setMat4("view", view);
+    playerShader->setMat4("model", model);
+    drawPlayer();
+}
 
 
 // Read img file and generate ID of texture.

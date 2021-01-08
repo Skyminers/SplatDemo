@@ -1,11 +1,7 @@
-//
-// Created by 刘一辰 on 2020/10/25.
-//
-
 #ifndef GLTEST_CAMERA_H
 #define GLTEST_CAMERA_H
 
-#include <Player.h>
+#include <GameLogic.h>
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>

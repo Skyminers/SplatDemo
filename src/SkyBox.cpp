@@ -1,6 +1,6 @@
 #define STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_STATIC
-#include <skybox.h>
+#include <SkyBox.h>
 #include <string>
 #include <vector>
 #include <stb/stb_image.h>
