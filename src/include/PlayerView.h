@@ -5,6 +5,7 @@
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <cstring>
+#include <cstdio>
 using namespace std;
 
 void readOBJ(const char *filename, vector<float>& vertices, vector<unsigned int>& elements);
