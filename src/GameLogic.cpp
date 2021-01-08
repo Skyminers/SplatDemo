@@ -6,6 +6,14 @@ uniform_real_distribution<double> u(-0.5, 0.5);
 vector<Bullet*> Bullet::bulletQueue;
 vector<Player*> Player::playerQueue;
 
+Bullet::Bullet(glm::vec3 pos, glm::vec3 dir, float time, glm::vec3 color, float speed):
+    bornPosition(pos), bornDirection(dir), bornTime(time) {
+    this->position = pos;
+    this->color = color;
+    this->speed = speed;
+    this->g = 10.0f;
+}
+
 void Bullet::update(float time) {
     float deltaTime = time - bornTime;
     float y = bornPosition.y + bornDirection.y * deltaTime * speed - g * deltaTime * deltaTime / 2;
@@ -18,12 +26,12 @@ void Bullet::update(float time) {
     position = glm::vec3(x, y, z);
 }
 
-glm::vec3 Bullet::getPos() {
-    return position;
-}
-
-bool Bullet::isAlive() {
-    return alive;
+Player::Player(glm::vec3 pos, glm::vec3 color, glm::vec3 dir):
+    gunDirection(dir), moveDirection(dir) {
+    this->position = pos;
+    this->color = color;
+    this->g = 15.0f;
+    this->speed = 5.0f;
 }
 
 void Player::startJump(float time, float v, float g) {
@@ -49,20 +57,12 @@ void Player::shoot(glm::vec3 front, float time) {
     Bullet::bulletQueue.push_back(new Bullet(pos, front, time));
 }
 
-bool Player::isAlive() {
-    return hp > 0;
-}
-
 bool Player::isJumping() {
     return jumping;
 }
 
 int Player::HP() {
     return hp;
-}
-
-glm::vec3 Player::getPos() {
-    return position;
 }
 
 float Player::rotateAngle() {

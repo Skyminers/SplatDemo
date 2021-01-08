@@ -18,7 +18,8 @@ if(WIN32)
                                 src/Renderer.cpp
                                 src/SkyBox.cpp
                                 src/Floor.cpp
-                                src/PlayerView.cpp)
+                                src/PlayerView.cpp
+                                src/PhysicalEngine.cpp)
 
     target_link_libraries(SplatDemo glfw3)
 endif()
@@ -44,7 +45,8 @@ if(APPLE)
                         src/Renderer.cpp
                         src/SkyBox.cpp
                         src/Floor.cpp
-                        src/PlayerView.cpp)
+                        src/PlayerView.cpp
+                        src/PhysicalEngine.cpp)
 
     add_executable(SplatDemo ${SOURCE_FILES})
 

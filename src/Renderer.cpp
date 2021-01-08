@@ -58,6 +58,7 @@ void renderBullet(Bullet* bullet, float time) {
     bulletShader->setMat4("projection", projection);
     bulletShader->setMat4("view", view);
     bulletShader->setMat4("model", model);
+    bulletShader->setVec3("color", bullet->getColor());
     drawBullet();
 }
 
@@ -73,6 +74,7 @@ void renderPlayer(Player* player, float time) {
     playerShader->setMat4("projection", projection);
     playerShader->setMat4("view", view);
     playerShader->setMat4("model", model);
+    playerShader->setVec3("color", player->getColor());
     drawPlayer();
 }
 

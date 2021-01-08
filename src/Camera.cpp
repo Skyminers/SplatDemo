@@ -40,7 +40,9 @@ void Camera::updateCameraVectors(){
 }
 
 void Camera::processKey(cameraMovement key, float deltaTime, float nowTime) {
-    float moveLen = deltaTime * speed;
+    float moveLen;
+    if (!bindToPlayer) moveLen = deltaTime * speed;
+    else moveLen = deltaTime * player->speed;
     switch (key) {
         case FORWARD:
             if (!bindToPlayer) Position += Front * moveLen;
@@ -78,7 +80,7 @@ void Camera::processKey(cameraMovement key, float deltaTime, float nowTime) {
             shooting = false;
             if (jitter < 0.3f) break;
             if (bindToPlayer) {
-                if (--playerid < 0) playerid = Player::playerQueue.size() - 1;
+                if (--playerid < 0) playerid = (int)Player::playerQueue.size() - 1;
                 player = Player::playerQueue[playerid];
                 updateCameraVectors();
             }

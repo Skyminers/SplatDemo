@@ -7,46 +7,40 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <Shaders.h>
 #include <random>
+#include <PhysicalEngine.h>
 
 using namespace std;
 
-class Bullet {
+class Bullet : public object {
 public:
     static vector<Bullet*> bulletQueue;
-    Bullet(glm::vec3 pos, glm::vec3 dir, float time, float speed = 15.0f):
-        position(pos), bornPosition(pos), bornDirection(dir), bornTime(time), speed(speed) { }
+    Bullet(glm::vec3 pos, glm::vec3 dir, float time, glm::vec3 color = glm::vec3(1.0f, 0.0f, 0.0f), float speed = 15.0f);
 
     void update(float time);
-    glm::vec3 getPos();
-    bool isAlive();
 
 private:
-    glm::vec3 position, bornDirection, bornPosition;
-    float bornTime, speed, g = 10.0f;
-    bool alive = true;
+    glm::vec3 bornDirection, bornPosition;
+    float bornTime;
 
 };
 
-class Player {
+class Player : public object {
 public:
     friend class Camera;
     static vector<Player*> playerQueue;
-    explicit Player(glm::vec3 pos, glm::vec3 dir = glm::vec3(1.0f, 0.0f, 0.0f)):
-        position(pos), gunDirection(dir), moveDirection(dir) { }
+    explicit Player(glm::vec3 pos, glm::vec3 color = glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3 dir = glm::vec3(1.0f, 0.0f, 0.0f));
 
     void startJump(float time, float v = 7.0f, float g = 15.0f);
     void jumpUpdate(float time);
     void shoot(glm::vec3 front, float time);
-    bool isAlive();
     bool isJumping();
     int HP();
-    glm::vec3 getPos();
     float rotateAngle();
 
 private:
-    glm::vec3 position, gunDirection, moveDirection;
-    float yaw = -90.0f, pitch = 0.0f, speed = 5.0f, zoom = 45.0f;
-    float g = 15.0f, velocityY = 7.0f, jumpTime = 0.0f;
+    glm::vec3 gunDirection, moveDirection;
+    float yaw = -90.0f, pitch = 0.0f, zoom = 45.0f;
+    float velocityY = 7.0f, jumpTime = 0.0f;
     bool jumping = false;
     int hp = 100;
 
@@ -58,11 +52,10 @@ public:
     friend class Bullet;
     friend class GameWindow;
     void init(int num);
-    void renderObjects(float time);
 
 private:
-
     int playerNum;
+
 };
 
 #endif //SPLATDEMO_GAMELOGIC_H
