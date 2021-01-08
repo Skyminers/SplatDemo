@@ -52,7 +52,7 @@ void Bullet::readOBJ(const char *filename) {
 }
 
 void Bullet::renderInit() {
-    readOBJ("../data/obj/bullet.obj");
+    readOBJ("../resource/obj/bullet.obj");
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);
@@ -129,7 +129,7 @@ void Player::readOBJ(const char *filename) {
 }
 
 void Player::renderInit() {
-    readOBJ("../data/obj/player.obj");
+    readOBJ("../resource/obj/player.obj");
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);

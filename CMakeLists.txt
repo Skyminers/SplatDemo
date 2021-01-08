@@ -4,20 +4,20 @@ project(SplatDemo)
 set(CMAKE_CXX_STANDARD 14)
 
 if(WIN32)
-    include_directories(${PROJECT_SOURCE_DIR}/include
-                        ${PROJECT_SOURCE_DIR}/src/include)
+    include_directories(include
+                        src/include)
 
     link_directories(${PROJECT_SOURCE_DIR}/lib/windows)
 
-    add_executable(SplatDemo    ${PROJECT_SOURCE_DIR}/src/main.cpp 
-                                ${PROJECT_SOURCE_DIR}/src/glad.c
-                                ${PROJECT_SOURCE_DIR}/src/Shaders.cpp 
-                                ${PROJECT_SOURCE_DIR}/src/Camera.cpp 
-                                ${PROJECT_SOURCE_DIR}/src/Player.cpp
-                                ${PROJECT_SOURCE_DIR}/src/GameWindow.cpp
-                                ${PROJECT_SOURCE_DIR}/src/Renderer.cpp
-                                ${PROJECT_SOURCE_DIR}/src/skybox.cpp
-                                ${PROJECT_SOURCE_DIR}/src/floor.cpp
+    add_executable(SplatDemo    src/main.cpp 
+                                src/glad.c
+                                src/Shaders.cpp 
+                                src/Camera.cpp 
+                                src/Player.cpp
+                                src/GameWindow.cpp
+                                src/Renderer.cpp
+                                src/skybox.cpp
+                                src/floor.cpp
                   )
 
     target_link_libraries(SplatDemo glfw3)
@@ -25,8 +25,8 @@ endif()
 
 if(APPLE)
 
-    include_directories(${PROJECT_SOURCE_DIR}/include
-                        ${PROJECT_SOURCE_DIR}/src/include)
+    include_directories(include
+                        src/include)
 
     # 添加目标链接
     set(GLEW_LINK /usr/local/Cellar/glew/2.2.0/lib/libGLEW.2.2.dylib)

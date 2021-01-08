@@ -24,7 +24,7 @@ void ShadersInit() {
                                 "../src/shaders/skyBoxFS.glsl");
     //    unsigned int floorTexture;
     //    if(!getTextureID(floorTexture, "../img/floor.jpg")) return 0;
-    skyBoxInit("../data/texture/skybox");
+    skyBoxInit("../resource/texture/skybox");
     floorInit();
 }
 
