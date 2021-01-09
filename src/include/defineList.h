@@ -1,0 +1,12 @@
+//
+// Created by 刘一辰 on 2021/1/9.
+//
+
+#ifndef SPLATDEMO_DEFINELIST_H
+#define SPLATDEMO_DEFINELIST_H
+
+#define FLOOR_SIZE 300
+#define FLOOR_MAX_POSITION 50
+#define FLOOR_COLOR 0.1
+
+#endif //SPLATDEMO_DEFINELIST_H
