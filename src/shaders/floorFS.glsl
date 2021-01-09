@@ -3,6 +3,7 @@ out vec4 FragColor;
 in vec3 ourColor;
 in vec3 normal;
 in vec3 worldPos;
+in float ourAlpha;
 
 uniform vec3 lightColor;
 uniform vec3 lightPos;
@@ -32,7 +33,7 @@ void main() {
 
     vec3 result = (global + diffuse + speculat) * ourColor;
 
-    FragColor = vec4(result, 1.0);//vec4(1.0, 0.5, 0.2, 1.0);
+    FragColor = vec4(ourAlpha * result, 1);//vec4(1.0, 0.5, 0.2, 1.0);
 }
 
 float cookTorranceSpec(vec3 lightDir, vec3 viewDir, vec3 surfaceNormal, float r, float f){

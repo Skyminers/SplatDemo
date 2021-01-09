@@ -3,10 +3,10 @@
 #include <GLFW/glfw3.h>
 
 float floorVertices[] = {
-        -100.0f, 0.0f, -100.0f, 1.0f, 1.0f, 1.0f,
-        -100.0f, 0.0f,  100.0f, 1.0f, 1.0f, 1.0f,
-         100.0f, 0.0f, -100.0f, 1.0f, 1.0f, 1.0f,
-         100.0f, 0.0f,  100.0f, 1.0f, 1.0f, 1.0f
+        -100.0f, 0.0f, -100.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+        -100.0f, 0.0f,  100.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+         100.0f, 0.0f, -100.0f, 1.0f, 1.0f, 1.0f, 0.0f,
+         100.0f, 0.0f,  100.0f, 1.0f, 1.0f, 1.0f, 0.0f,
 };
 
 unsigned int floorElement[] = {
@@ -24,10 +24,12 @@ void floorInit(){
     glBindVertexArray(floorVAO);
     glBindBuffer(GL_ARRAY_BUFFER, floorVBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof floorVertices, &floorVertices, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 7*sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)(3*sizeof(float)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 7*sizeof(float), (void*)(3*sizeof(float)));
     glEnableVertexAttribArray(1);
+    glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, 7*sizeof(float), (void*)(6*sizeof(float)));
+    glEnableVertexAttribArray(2);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, floorEBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof floorElement, &floorElement, GL_STATIC_DRAW);
 }
