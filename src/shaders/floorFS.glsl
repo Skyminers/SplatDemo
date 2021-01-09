@@ -15,7 +15,7 @@ float cookTorranceSpec(vec3 lightDir, vec3 viewDir, vec3 surfaceNormal, float r,
 float beckmannDistribution(float NdotH, float f);
 
 void main() {
-    float globalAlpha = 0.1;
+    float globalAlpha = 0.3;
     vec3 global = lightColor * globalAlpha;
 
     vec3 norm = normalize(normal);
