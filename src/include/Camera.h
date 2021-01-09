@@ -14,7 +14,7 @@ enum cameraMovement{
 class Camera {
 public:
     glm::vec3 Position, Front, Up, Right, WorldUp;
-    float yaw, pitch, speed, sensitivity, zoom, jitter = 0.0f, shootJitter = 0.0f;
+    float yaw, pitch, speed, sensitivity, zoom = 45.0f, jitter = 0.0f, shootJitter = 0.0f;
     bool shooting = false;
 
     explicit Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH);
@@ -22,7 +22,7 @@ public:
 
     glm::mat4 getViewMat();
     void processKey(cameraMovement move, float deltaTime, float nowTime = 0.0f);
-    void processMouse(float xOffset, float yOffset);
+    void processMouse(float xOffset, float yOffset, float time);
     void processScroll(float yOffset);
     glm::vec3 getPosition();
     float getZoom();
@@ -32,7 +32,7 @@ private:
     constexpr static float PITCH = 0.0f;
     constexpr static float SPEED = 5.0f;
     constexpr static float SENSITIVITY = 0.1f;
-    constexpr static float ZOOM = 45.0f;
+    constexpr static float ZOOM = 70.0f;
 
     bool bindToPlayer = false;
     Player* player = nullptr;

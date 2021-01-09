@@ -5,12 +5,11 @@
 #include <GameWindow.h>
 
 GameWindow window;
-GameLogic game;
 
 int main() {
     //Overall Initialization
     ShadersInit();
-    game.init(3);
+    GameLogic::init(2, 3);
 
     // render loop
     // -----------

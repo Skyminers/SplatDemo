@@ -15,27 +15,28 @@ extern GameLogic game;
 // ---------------------------------------------------------------------------------------------------------
 void processInput(GLFWwindow *window)
 {
+    //camera.check();
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        camera.processKey(cameraMovement::FORWARD, deltaTime);
+        camera.processKey(cameraMovement::FORWARD, deltaTime, currentFrame);
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        camera.processKey(cameraMovement::BACKWARD, deltaTime);
+        camera.processKey(cameraMovement::BACKWARD, deltaTime, currentFrame);
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera.processKey(cameraMovement::LEFT, deltaTime);
+        camera.processKey(cameraMovement::LEFT, deltaTime, currentFrame);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera.processKey(cameraMovement::RIGHT, deltaTime);
+        camera.processKey(cameraMovement::RIGHT, deltaTime, currentFrame);
     if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
-        camera.processKey(cameraMovement::CAMERA_PLAYER, deltaTime);
+        camera.processKey(cameraMovement::CAMERA_PLAYER, deltaTime, currentFrame);
     if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
-        camera.processKey(cameraMovement::LAST_PLAYER, deltaTime);
+        camera.processKey(cameraMovement::LAST_PLAYER, deltaTime, currentFrame);
     if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
-        camera.processKey(cameraMovement::NEXT_PLAYER, deltaTime);
+        camera.processKey(cameraMovement::NEXT_PLAYER, deltaTime, currentFrame);
     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
         camera.processKey(cameraMovement::UP, deltaTime, currentFrame);
     if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-        camera.processKey(cameraMovement::DOWN, deltaTime);
+        camera.processKey(cameraMovement::DOWN, deltaTime, currentFrame);
 }
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
@@ -60,7 +61,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos){
     lastX = xpos;
     lastY = ypos;
 
-    camera.processMouse(xOffset, yOffset);
+    camera.processMouse(xOffset, yOffset, currentFrame);
 }
 
 void scroll_callback(GLFWwindow* windows, double xOffset, double yOffset){
@@ -138,15 +139,23 @@ void GameWindow::run() {
         view = camera.getViewMat();
         model = glm::mat4();
 
-        for (auto player = Player::playerQueue.begin(); player != Player::playerQueue.end();) {
-            renderPlayer(*player, currentFrame);
-            if (!(*player)->isAlive()) Player::playerQueue.erase(player);
-            else player++;
-        }
         for (auto bullet = Bullet::bulletQueue.begin(); bullet != Bullet::bulletQueue.end();) {
+            GameLogic::checkBullet(*bullet, currentFrame);
+            if (!(*bullet)->isAlive()) {
+                Bullet::bulletQueue.erase(bullet);
+                continue;
+            }
             renderBullet(*bullet, currentFrame);
-            if (!(*bullet)->isAlive()) Bullet::bulletQueue.erase(bullet);
-            else bullet++;
+            bullet++;
+        }
+        GameLogic::checkPlayer(currentFrame);
+        for (auto player = Player::playerQueue.begin(); player != Player::playerQueue.end();) {
+            if (!(*player)->isAlive()) {
+                Player::playerQueue.erase(player);
+                continue;
+            }
+            renderPlayer(*player, currentFrame);
+            player++;
         }
         renderFloor();
         renderSkybox();

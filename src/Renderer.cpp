@@ -47,13 +47,10 @@ void renderSkybox() {
 }
 
 void renderBullet(Bullet* bullet, float time) {
-    bullet->update(time);
-    if (!bullet->isAlive()) return;
     bulletShader->useProgram();
     glm::mat4 model;
-    model = glm::translate(model, glm::vec3(0, 1.0f, 0));
     model = glm::translate(model, bullet->getPos());
-    float ratio = 0.2f;
+    float ratio = bullet->getRadius();
     model = glm::scale(model, glm::vec3(ratio, ratio, ratio));
     bulletShader->setMat4("projection", projection);
     bulletShader->setMat4("view", view);
@@ -63,12 +60,10 @@ void renderBullet(Bullet* bullet, float time) {
 }
 
 void renderPlayer(Player* player, float time) {
-    if (player->isJumping()) player->jumpUpdate(time);
     playerShader->useProgram();
     glm::mat4 model;
-    float ratio = (float)player->HP() / 100.0f;
-    model = glm::translate(model, glm::vec3(0, ratio, 0));
-    model = glm::translate(model, player->getPos());
+    float ratio = player->getHalfLength();
+    model = glm::translate(model, player->getPos() + glm::vec3(0, ratio, 0));
     model = glm::scale(model, glm::vec3(ratio, ratio, ratio));
     model = glm::rotate(model, glm::radians(player->rotateAngle()), glm::vec3(0, 1, 0));
     playerShader->setMat4("projection", projection);
