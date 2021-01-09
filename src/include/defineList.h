@@ -7,6 +7,10 @@
 
 #define FLOOR_SIZE 300
 #define FLOOR_MAX_POSITION 50
-#define FLOOR_COLOR 0.1
+#define FLOOR_UNIT (2.0*FLOOR_MAX_POSITION/FLOOR_SIZE)
+#define FLOOR_COLOR 0.9
+#define GET_POS(x,y) ((x)*(FLOOR_SIZE+1)+(y))
+#define OUT_RADIUS 5
+#define IN_RADIUS 2
 
 #endif //SPLATDEMO_DEFINELIST_H

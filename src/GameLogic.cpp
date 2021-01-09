@@ -1,4 +1,5 @@
-#include <GameLogic.h>
+#include "GameLogic.h"
+#include "Floor.h"
 
 random_device e;
 uniform_real_distribution<float> u(-0.5, 0.5);
@@ -219,4 +220,11 @@ void GameLogic::checkBullet(Bullet* bullet, float time) {
             bullet->alive = false;
         }
     }
+}
+
+void GameLogic::plantBullet(){
+    for(auto & bullet : Bullet::deadBulletQueue){
+        plant(bullet->getPos()[0], bullet->getPos()[2], bullet->color);
+    }
+    Bullet::deadBulletQueue.clear();
 }

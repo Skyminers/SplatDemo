@@ -61,6 +61,7 @@ public:
     static void init(int teamNum, int playerNum);
     static void checkPlayer(float time, Player* player = nullptr);
     static void checkBullet(Bullet* bullet, float time);
+    static void plantBullet();
 };
 
 #endif //SPLATDEMO_GAMELOGIC_H

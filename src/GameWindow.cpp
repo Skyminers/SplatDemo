@@ -148,6 +148,7 @@ void GameWindow::run() {
             renderBullet(*bullet, currentFrame);
             bullet++;
         }
+        GameLogic::plantBullet();
         GameLogic::checkPlayer(currentFrame);
         for (auto player = Player::playerQueue.begin(); player != Player::playerQueue.end();) {
             if (!(*player)->isAlive()) {

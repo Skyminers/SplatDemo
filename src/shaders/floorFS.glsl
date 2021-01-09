@@ -32,7 +32,6 @@ void main() {
     fresnel);
 
     vec3 result = (global + diffuse + speculat) * ourColor;
-
     FragColor = vec4(ourAlpha * result, 1);//vec4(1.0, 0.5, 0.2, 1.0);
 }
 
