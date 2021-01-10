@@ -169,3 +169,10 @@ glm::mat4 Camera::getViewMat() {
     }
 }
 
+Player* Camera::getPlayer() {
+    return player;
+}
+
+bool Camera::bind() {
+    return bindToPlayer;
+}

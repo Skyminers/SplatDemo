@@ -26,6 +26,8 @@ public:
     void processScroll(float yOffset);
     glm::vec3 getPosition();
     float getZoom();
+    Player* getPlayer();
+    bool bind();
 
 private:
     constexpr static float YAW = -90.0f;
