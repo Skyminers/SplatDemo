@@ -114,7 +114,7 @@ void Player::randomAct(float time, float deltaTime) {
 }
 
 const float MAXV = 6.0f;
-const float floorA = 2.0f;
+const float floorF = 6.0f;
 
 void Player::update(float time) {
     float deltaTime = time - moveTime;
@@ -132,6 +132,7 @@ void Player::update(float time) {
         len = MAXV;
     }
     //cout << len << endl;
+    float floorA = floorF * halfLength * halfLength;
     if (len > eps) {
         glm::vec3 dir = glm::normalize(V);
         glm::vec3 A = - floorA * dir;
@@ -163,7 +164,7 @@ void Player::updateNew() {
 }
 
 void Player::edgeSolve() {
-    V = -V;
+    collisionSolve();
     if (!inControl) {
         yaw += 180.0f;
     }

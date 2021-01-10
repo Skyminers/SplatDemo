@@ -39,7 +39,7 @@ void Camera::updateCameraVectors(){
     }
 }
 
-const float cameraA = 10.0f;
+const float cameraA = 20.0f;
 
 void Camera::processKey(cameraMovement key, float deltaTime, float nowTime) {
     float moveLen;
