@@ -26,10 +26,10 @@ void main() {
     float spec = pow(max(dot(norm, halfwayDir), 0.0), 32);
     vec3 specular = spec * lightColor;
 
-    if(ourAlpha > 0){
-        specular =  1 * specular;
+    if(ourAlpha > 0.3){
+        specular = 0.8 * specular;
     }else{
-        specular = 0.5 * specular;
+        specular = 0.3 * specular;
     }
 
     vec3 result = (global + diffuse + specular) * ourColor;
