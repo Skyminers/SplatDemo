@@ -30,6 +30,7 @@ public:
 
 protected:
     float yaw = 0.0f, pitch = 30.0f, zoom = 50.0f, halfLength = 1.0f;
+    glm::vec3 V = glm::vec3(0.0f, 0.0f, 0.0f);
 
 };
 

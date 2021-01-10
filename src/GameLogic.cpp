@@ -4,7 +4,7 @@
 random_device e;
 uniform_real_distribution<float> u(-0.5, 0.5);
 uniform_real_distribution<float> uu(0, 1);
-const float eps = 1e-3;
+const float eps = 1e-5;
 
 vector<Bullet*> Bullet::bulletQueue;
 vector<Bullet*> Bullet::deadBulletQueue;
@@ -16,8 +16,12 @@ Bullet::Bullet(glm::vec3 pos, glm::vec3 dir, float time, unsigned int id, glm::v
     this->position = pos + glm::vec3(0.0f, radius, 0.0f);
     this->color = color;
     this->speed = speed + u(e) * 2;
-    this->g = 10.0f;
+    this->g = 25.0f;
     this->teamid = id;
+}
+
+bool Bullet::checkPos(float x, float z) {
+    return (fabs(x) <= FLOOR_MAX_POSITION && fabs(z) <= FLOOR_MAX_POSITION);
 }
 
 void Bullet::update(float time) {
@@ -28,7 +32,7 @@ void Bullet::update(float time) {
     if (y <= 0.0f) {
         y = 0.0f;
         alive = false;
-        if (deadBulletQueue.size() < 100) {
+        if (deadBulletQueue.size() < 100 && checkPos(position.x, position.z)) {
             deadBulletQueue.push_back(this);
         }
     }
@@ -45,31 +49,33 @@ Player::Player(glm::vec3 pos, glm::vec3 color, unsigned int teamid, glm::vec3 di
     this->teamid = teamid;
 }
 
-void Player::startJump(float time, float v, float g) {
-    if (jumping) return;
-    jumping = true;
+bool Player::checkPos(float x, float z) {
+    return (fabs(x) <= FLOOR_MAX_POSITION - 5.0f && fabs(z) <= FLOOR_MAX_POSITION - 5.0f);
+}
+
+void Player::startJump(float time, float v) {
+    if (jumpPhase == 1) return;
+    jumpPhase++;
     jumpTime = time;
-    velocityY = v;
-    this->g = g;
+    velocityY += v;
 }
 
 void Player::jumpUpdate(float time) {
     float deltaTime = time - jumpTime;
-    float height = velocityY * deltaTime - g * deltaTime * deltaTime / 2;
+    float height = position.y + velocityY * deltaTime - g * deltaTime * deltaTime / 2;
+    velocityY -= g * deltaTime;
     if (height < 0.0f) {
         height = 0.0f;
-        jumping = false;
+        velocityY = 0.0f;
+        jumpPhase = 0;
     }
+    jumpTime = time;
     position_new.y = height;
 }
 
 void Player::shoot(glm::vec3 front, float time) {
-    glm::vec3 pos = position + front * 1.0f + glm::vec3(u(e), u(e), u(e));
+    glm::vec3 pos = position + front * 1.0f + glm::vec3(u(e), uu(e), u(e));
     Bullet::bulletQueue.push_back(new Bullet(pos, front, time, teamid, color));
-}
-
-bool Player::isJumping() {
-    return jumping;
 }
 
 int Player::HP() {
@@ -86,6 +92,8 @@ void Player::updateVectors() {
     Right = Right = glm::normalize(glm::cross(Front, glm::vec3(0, 1, 0)));
 }
 
+const float playerA = 20.0f;
+
 void Player::randomAct(float time, float deltaTime) {
     if (uu(e) < 0.005) startJump(time);
     if (uu(e) < 0.05) {
@@ -95,15 +103,18 @@ void Player::randomAct(float time, float deltaTime) {
     if (uu(e) < 0.1) pitch_new += u(e) * 5;
     updateVectors();
     if (uu(e) < 0.4) {
-        float moveLen = deltaTime * speed;
+        float addV = deltaTime * playerA;
         float p = uu(e);
-        if (p < 0.7) position_new += Front * moveLen;
-        else if (p < 0.8) position_new -= Front * moveLen;
-        else if (p < 0.9) position_new += Right * moveLen;
-        else position_new -= Right * moveLen;
+        if (p < 0.5) V += Front * addV;
+        else if (p < 0.6) V -= Front * addV;
+        else if (p < 0.8) V += Right * addV;
+        else V -= Right * addV;
     }
     if (uu(e) < 0.1) shoot(gunDirection, time);
 }
+
+const float MAXV = 6.0f;
+const float floorA = 2.0f;
 
 void Player::update(float time) {
     float deltaTime = time - moveTime;
@@ -111,52 +122,36 @@ void Player::update(float time) {
     //cout << frontA << " " << frontV << endl;
     //if (id == 0) cout << frontA << " " << frontV << endl;
     if (!inControl) randomAct(time, deltaTime);
-    if (jumping) jumpUpdate(time);
+    if (jumpPhase) jumpUpdate(time);
+    float len =  glm::length(V);
+    if (len > MAXV) {
+        float ratio = MAXV / len;
+        frontV *= ratio;
+        rightV *= ratio;
+        V *= ratio;
+        len = MAXV;
+    }
+    //cout << len << endl;
+    if (len > eps) {
+        glm::vec3 dir = glm::normalize(V);
+        glm::vec3 A = - floorA * dir;
+        deltaTime = min(fabs(len) / fabs(floorA * deltaTime), deltaTime);
+        position_new += V * deltaTime + A * deltaTime * deltaTime / 2.0f;
+        V += A * deltaTime;
+    }
     position_old = position;
     position = position_new;
-//    cout << position.x << " " << position.y << " " << position.z << endl;
-//    if (frontV > speed + eps) {
-//        frontV = speed;
-//    }
-//    if (frontV < -speed - eps) {
-//        frontV = -speed;
-//    }
-//    if (rightV > speed + eps) {
-//        rightV = speed;
-//    }
-//    if (rightV < -speed - eps) {
-//        rightV = -speed;
-//    }
-//    position += (frontV * deltaTime + frontA * deltaTime * deltaTime / 2) * Front;
-//    position += (rightV * deltaTime + rightA * deltaTime * deltaTime / 2) * Right;
     yaw_old = yaw;
     yaw = yaw_new;
     pitch_old = pitch;
     pitch = pitch_new;
-//    if (time - pressTime > 0.1f) {
-//        if (frontV > 0) frontA -= 5.0f * deltaTime;
-//        else frontA += 5.0f * deltaTime;
-//        if (rightV > 0) rightA -= 5.0f * deltaTime;
-//        else rightA += 5.0f * deltaTime;
-//        //if (id == 0) cout << "!" << frontA << " " << frontV << endl;
-//        float fV = frontV;
-//        float rV = rightV;
-//        frontV += frontA * deltaTime;
-//        //if (id == 0) cout << "!" << frontA << " " << frontV << endl;
-//        rightV += rightA * deltaTime;
-//        if ((fV > 0) != (frontV > 0) || fabs(frontV) >= fabs(fV) + fabs(frontA * deltaTime) + eps) frontV = frontA = 0;
-//        if ((rV > 0) != (rightV > 0) || fabs(rightV) >= fabs(rV) + fabs(rightA * deltaTime) + eps) rightV = rightV = 0;
-//        //if (id == 0) cout << "!" << frontA << " " << frontV << endl;
-//    } else {
-//        frontV += frontA * deltaTime;
-//        rightV += rightA * deltaTime;
-//    }
     moveTime = time;
 }
 
 void Player::collisionSolve() {
     position.x = position_old.x;
     position.z = position_old.z;
+    V = -V;
     yaw = yaw_old;
     pitch = pitch_old;
 }
@@ -167,12 +162,19 @@ void Player::updateNew() {
     pitch_new = pitch;
 }
 
+void Player::edgeSolve() {
+    V = -V;
+    if (!inControl) {
+        yaw += 180.0f;
+    }
+}
+
 int GameLogic::playerNum;
 int GameLogic::teamNum;
 
-void GameLogic::init(int teamNum, int playerNum) {
-    GameLogic::playerNum = playerNum;
-    GameLogic::teamNum = teamNum;
+void GameLogic::init(int tNum, int pNum) {
+    GameLogic::playerNum = pNum;
+    GameLogic::teamNum = tNum;
     for (int i = 0; i < teamNum; ++i) {
         glm::vec3 color(uu(e), uu(e), uu(e));
         for (int j = 0; j < playerNum; ++j) {
@@ -180,12 +182,15 @@ void GameLogic::init(int teamNum, int playerNum) {
             Player::playerQueue.push_back(new Player(glm::vec3(px, 0.0f, py), color, i));
         }
     }
-
 }
 
 void GameLogic::checkPlayer(float time, Player* player) {
     if (player == nullptr) {
-        for (auto & p1 : Player::playerQueue) p1->update(time);
+        for (auto & p1 : Player::playerQueue) {
+            p1->update(time);
+            if (!checkPos(p1->position.x, p1->position.z))
+                p1->edgeSolve();
+        }
         for (auto & p1 : Player::playerQueue) {
             for (auto &p2 : Player::playerQueue) {
                 if (p2->id == p1->id) continue;
@@ -198,6 +203,9 @@ void GameLogic::checkPlayer(float time, Player* player) {
         }
     } else {
         player->update(time);
+        if (!checkPos(player->position.x, player->position.z)) {
+            player->edgeSolve();
+        }
         for (auto &p2 : Player::playerQueue) {
             if (p2->id == player->id) continue;
             if (PhysicalEngine::intersect(*player, *p2)) {
@@ -212,8 +220,11 @@ void GameLogic::checkPlayer(float time, Player* player) {
 void GameLogic::checkBullet(Bullet* bullet, float time) {
     bullet->update(time);
     for (auto & player : Player::playerQueue) {
-        if (player->teamid == bullet->teamid) continue;
         if (PhysicalEngine::intersect(*player, *bullet)) {
+            if (player->teamid == bullet->teamid) {
+                bullet->alive = false;
+                continue;
+            }
             player->hp--;
             if (player->hp <= 0) player->alive = false;
             player->halfLength = 0.6f + 0.4f * (float)player->hp / 50.0f;

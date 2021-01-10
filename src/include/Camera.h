@@ -24,7 +24,7 @@ public:
     void processKey(cameraMovement move, float deltaTime, float nowTime = 0.0f);
     void processMouse(float xOffset, float yOffset, float time);
     void processScroll(float yOffset);
-    glm::vec3 getPosition();
+    glm::vec3 getPosition() const;
     float getZoom();
     glm::vec3 getPlayerPos();
     bool bind();

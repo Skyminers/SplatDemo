@@ -39,6 +39,8 @@ void Camera::updateCameraVectors(){
     }
 }
 
+const float cameraA = 10.0f;
+
 void Camera::processKey(cameraMovement key, float deltaTime, float nowTime) {
     float moveLen;
     if (!bindToPlayer) moveLen = deltaTime * speed;
@@ -48,25 +50,29 @@ void Camera::processKey(cameraMovement key, float deltaTime, float nowTime) {
         case FORWARD:
             if (!bindToPlayer) Position += Front * moveLen;
             else {
-                player->position_new += player->Front * moveLen;
+                //player->position_new += player->Front * moveLen;
+                player->V += cameraA * deltaTime * player->Front;
             }
             break;
         case BACKWARD:
             if (!bindToPlayer) Position -= Front * moveLen;
             else {
-                player->position_new -= player->Front * moveLen;
+                //player->position_new -= player->Front * moveLen;
+                player->V -= cameraA * deltaTime * player->Front;
             }
             break;
         case LEFT:
             if (!bindToPlayer) Position -= Right * moveLen;
             else {
-                player->position_new -= player->Right * moveLen;
+                //player->position_new -= player->Right * moveLen;
+                player->V -= cameraA * deltaTime * Right;
             }
             break;
         case RIGHT:
             if (!bindToPlayer) Position += Right * moveLen;
             else {
-                player->position_new += player->Right * moveLen;
+                //player->position_new += player->Right * moveLen;
+                player->V += cameraA * deltaTime * Right;
             }
             break;
         case UP:
@@ -112,7 +118,7 @@ void Camera::processKey(cameraMovement key, float deltaTime, float nowTime) {
             jitter = 0.0f;
             break;
         case SHOOT:
-            if (shootJitter < 0.08f) break;
+            if (shootJitter < 0.05f) break;
             if (bindToPlayer) {
                 shooting = true;
                 player->shoot(Front, nowTime);
@@ -133,7 +139,6 @@ void Camera::processMouse(float xOffset, float yOffset, float time) {
         player->yaw_new += xOffset, player->pitch_new += yOffset;
         if (player->pitch_new < -50.0f) player->pitch_new = -50.0f;
         if (player->pitch_new > 30.0f) player->pitch_new = 30.0f;
-        GameLogic::checkPlayer(time, player);
     }
     updateCameraVectors();
 }
@@ -155,7 +160,7 @@ float Camera::getZoom() {
     return zoom;
 }
 
-glm::vec3 Camera::getPosition() {
+glm::vec3 Camera::getPosition() const {
     return Position;
 }
 
