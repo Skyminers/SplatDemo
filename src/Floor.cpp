@@ -41,9 +41,14 @@ void genFloorVertices(){
             floorElement.push_back(idu);
 
             // a triangle
-            floorElement.push_back(idu);
-            floorElement.push_back(idv);
+//            floorElement.push_back(idu);
+//            floorElement.push_back(idv);
+//            floorElement.push_back(idy);
+
+            // an amazing effect !!!
+            floorElement.push_back(idx);
             floorElement.push_back(idy);
+            floorElement.push_back(idv);
         }
     }
 }
@@ -83,7 +88,8 @@ void plant(float x, float z, glm::vec3 color){
     static set<BulletPos> s;
 
     if(!checkPos(x, z)){
-        std::cerr << "Error BulletPos " << std::endl;
+        //std::cerr << "Error BulletPos " << std::endl;
+        return ;
     }
 
     s.clear();
