@@ -49,6 +49,7 @@ public:
     static bool inBox(glm::vec3 pos, glm::vec3 boxPoint, float halfLength, float angle, float r);
     static bool intersect(Cube a, Cube b);
     static bool intersect(Cube a, Sphere b);
+    static bool intersect(glm::vec3 p1, glm::vec3 p2, glm::vec3 boxPoint, float halfLength);
 
 };
 
