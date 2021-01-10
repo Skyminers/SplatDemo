@@ -12,5 +12,6 @@
 #define GET_POS(x,y) ((x)*(FLOOR_SIZE+1)+(y))
 #define OUT_RADIUS 5
 #define IN_RADIUS 2
+#define FLOOR_ELEMENT_COUNT 9
 
 #endif //SPLATDEMO_DEFINELIST_H

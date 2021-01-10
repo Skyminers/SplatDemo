@@ -5,16 +5,16 @@ in vec3 ourColor;
 in vec3 normal;
 in vec3 worldPos;
 in float ourAlpha;
-in vec2 TexCoord;
+in vec2 NoiseTexCoord;
 
 uniform vec3 lightColor;
 uniform vec3 lightPos;
 uniform vec3 cameraPos;
 uniform sampler2D NoiseTexture;
 
-#define ColorThreshold 0.5
-#define EdgeThreshold 0.9
-#define SecondThreshold 0.2
+#define ColorThreshold 0.8
+#define EdgeThreshold 0.95
+#define SecondThreshold 0.5
 #define NoiseThreshold 0.5
 
 float cookTorranceSpec(vec3 lightDir, vec3 viewDir, vec3 surfaceNormal, float r, float f);
@@ -40,24 +40,25 @@ void main() {
         specular = 0.3 * specular;
     }*/
     //specular = vec3(0.0f, 0.0f, 0.0f);
-    specular = max(0.0, ourAlpha-0.45) * specular;
+    specular = max(0.0, ourAlpha-0.6) * specular;
 
     
     // TODO: ourAlpha 表示涂色强度，用这个值来进行噪声混合
-    //vec4 Noise = texture(NoiseTexture, TexCoord);
-    float NoiseValue = 0.5;//Noise.x;
+    vec4 Noise = texture(NoiseTexture, NoiseTexCoord); 
+    float NoiseValue = Noise.x;
+    //float NoiseValue = 0.5;
     //float EdgeDelta = 
     vec3 resultColor = ourColor;
     vec3 groundColor = vec3(0.6f,0.6f,0.6f);
     if(ourAlpha>ColorThreshold) {
         if(ourAlpha>EdgeThreshold) 
-            resultColor = ourColor*0.9+vec3(1,1,1)*NoiseValue*0.1;
+            resultColor = ourColor*0.95+vec3(1,1,1)*NoiseValue*0.05;
         else 
-            resultColor = ourColor*ourAlpha+vec3(1,1,1)*NoiseValue*0.1+groundColor*(0.9-ourAlpha);
+            resultColor = ourColor*ourAlpha+vec3(1,1,1)*NoiseValue*0.05+groundColor*(0.95-ourAlpha);
     }
     else if(ourAlpha>SecondThreshold) {
         if(NoiseValue>NoiseThreshold) 
-            resultColor = ourColor*ourAlpha+vec3(1,1,1)*NoiseValue*0.1+groundColor*(0.9-ourAlpha);
+            resultColor = ourColor*ourAlpha+vec3(1,1,1)*NoiseValue*0.1+groundColor*(1.0-ourAlpha-NoiseValue*0.1);
         else 
             resultColor = groundColor;//take ground texture
     }
@@ -66,4 +67,6 @@ void main() {
     }
     vec3 result = (global + diffuse + specular) * resultColor;
     FragColor = vec4(result, 1);//vec4(1.0, 0.5, 0.2, 1.0);
+    //FragColor = Noise;
+    //FragColor = vec4(1,0,0,1);
 }

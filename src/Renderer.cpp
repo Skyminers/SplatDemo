@@ -21,7 +21,7 @@ void ShadersInit() {
     //    unsigned int floorTexture;
     //    if(!getTextureID(floorTexture, "../img/floor.jpg")) return 0;
     skyBoxInit("../resource/texture/skybox");
-    floorInit();
+    floorInit("../resource/texture/Noise.png");
     bulletRenderInit();
     playerRenderInit();
 }

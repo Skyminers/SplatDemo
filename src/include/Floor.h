@@ -2,6 +2,7 @@
 #define SPLATDEMO_FLOOR_H
 
 #include <glm/glm.hpp>
+#include <string>
 
 class BulletPos{
 public:
@@ -20,7 +21,7 @@ private:
     int x, z;
 };
 
-void floorInit();
+void floorInit(std::string NoiseImgPath);
 void drawFloor();
 void genFloorVertices();
 void plant(float x, float z, glm::vec3 color);
