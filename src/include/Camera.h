@@ -26,7 +26,7 @@ public:
     void processScroll(float yOffset);
     glm::vec3 getPosition();
     float getZoom();
-    Player* getPlayer();
+    glm::vec3 getPlayerPos();
     bool bind();
 
 private:
@@ -39,6 +39,7 @@ private:
     bool bindToPlayer = false;
     Player* player = nullptr;
     int playerid = 0;
+    glm::vec3 playerPos;
 
     void updateCameraVectors();
 

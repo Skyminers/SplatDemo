@@ -165,12 +165,13 @@ glm::mat4 Camera::getViewMat() {
     } else {
         glm::vec3 pos = player->position - Front * 12.0f + glm::vec3(0.0f, 8.0f, 0.0f);
         if (pos.y < 0.1f) pos.y = 0.1f;
+        playerPos = pos;
         return glm::lookAt(pos, player->position + Front * 10.0f, Up);
     }
 }
 
-Player* Camera::getPlayer() {
-    return player;
+glm::vec3 Camera::getPlayerPos() {
+    return playerPos;
 }
 
 bool Camera::bind() {

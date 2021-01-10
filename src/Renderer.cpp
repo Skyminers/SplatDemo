@@ -33,7 +33,7 @@ void renderFloor() {
     floorShader->setMat4("model", model);
     floorShader->setVec3("lightColor", 1.0f, 1.0f, 1.0f);
     floorShader->setVec3("lightPos", .0, .100, .0);
-    floorShader->setVec3("cameraPos", (camera.bind())?camera.getPlayer()->getPos():camera.getPosition());
+    floorShader->setVec3("cameraPos", (camera.bind())?camera.getPlayerPos():camera.getPosition());
     drawFloor();
 }
 
