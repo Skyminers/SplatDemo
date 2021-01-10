@@ -2,6 +2,7 @@
 #define STB_IMAGE_STATIC
 
 #include <Renderer.h>
+#include "defineList.h"
 
 extern Camera camera;
 glm::mat4 projection, view, model;
@@ -31,10 +32,8 @@ void renderFloor() {
     floorShader->setMat4("projection", projection);
     floorShader->setMat4("model", model);
     floorShader->setVec3("lightColor", 1.0f, 1.0f, 1.0f);
-    floorShader->setVec3("lightPos", .0, .100, .0);
+    floorShader->setVec3("lightPos", FLOOR_MAX_POSITION, 100.0f, FLOOR_MAX_POSITION);
     floorShader->setVec3("cameraPos", camera.getPosition());
-    floorShader->setFloat("roughness", 1.8);
-    floorShader->setFloat("fresnel", .1);
     drawFloor();
 }
 
