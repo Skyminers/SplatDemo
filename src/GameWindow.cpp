@@ -1,9 +1,8 @@
 #include <GameWindow.h>
 #include <Camera.h>
 #include <Renderer.h>
+#include "defineList.h"
 
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
 
 Camera camera(glm::vec3(0.0f, 15.0f, 0.0f));
 float deltaTime = 0.0f;
@@ -130,34 +129,44 @@ void GameWindow::run() {
         // -----
         processInput(window);
 
-        // render
-        // ------
-        glClearColor(0.1, 0.1, 0.1, 1.0);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        projection = glm::perspective(glm::radians(camera.getZoom()), (float)SCR_WIDTH/SCR_HEIGHT, 0.1f, 100.0f);
-        view = camera.getViewMat();
-        model = glm::mat4();
-
-        for (auto bullet = Bullet::bulletQueue.begin(); bullet != Bullet::bulletQueue.end();) {
-            GameLogic::checkBullet(*bullet, currentFrame);
-            if (!(*bullet)->isAlive()) {
-                Bullet::bulletQueue.erase(bullet);
-                continue;
-            }
-            renderBullet(*bullet, currentFrame);
-            bullet++;
-        }
-        GameLogic::plantBullet();
         GameLogic::checkPlayer(currentFrame);
         for (auto player = Player::playerQueue.begin(); player != Player::playerQueue.end();) {
             if (!(*player)->isAlive()) {
                 Player::playerQueue.erase(player);
                 continue;
             }
-            renderPlayer(*player, currentFrame);
             player++;
         }
+        for (auto bullet = Bullet::bulletQueue.begin(); bullet != Bullet::bulletQueue.end();) {
+            GameLogic::checkBullet(*bullet, currentFrame);
+            if (!(*bullet)->isAlive()) {
+                Bullet::bulletQueue.erase(bullet);
+                continue;
+            }
+            bullet++;
+        }
+
+        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        // Depth test
+        renderShadowDepth(Player::playerQueue, Bullet::bulletQueue);
+
+        // render
+        // ------
+
+        projection = glm::perspective(glm::radians(camera.getZoom()), (float)SCR_WIDTH/SCR_HEIGHT, 0.1f, 100.0f);
+        view = camera.getViewMat();
+        model = glm::mat4();
+
+        for (auto bullet : Bullet::bulletQueue) {
+            renderBullet(bullet, currentFrame);
+        }
+        GameLogic::plantBullet();
+        for (auto player : Player::playerQueue) {
+            renderPlayer(player, currentFrame);
+        }
+
         renderFloor();
         renderSkybox();
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)

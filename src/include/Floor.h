@@ -27,4 +27,8 @@ void genFloorVertices();
 void plant(float x, float z, glm::vec3 color);
 bool checkPos(float x, float z);
 
+void shadowInit();
+void shadowBind();
+void shadowUnBind();
+
 #endif //SPLATDEMO_FLOOR_H

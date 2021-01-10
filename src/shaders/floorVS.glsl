@@ -9,14 +9,17 @@ out vec3 normal;
 out vec3 worldPos;
 out float ourAlpha;
 out vec2 NoiseTexCoord;
+out vec4 fragPosLightSpace;
 
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
+uniform mat4 lightSpaceMatrix;
 
 void main() {
     gl_Position = model * vec4(aPos, 1);
     worldPos = vec3(gl_Position);
+    fragPosLightSpace = lightSpaceMatrix * vec4(worldPos, 1.0);
 
     normal = vec3(0,1,0);
     gl_Position = projection * view * gl_Position;

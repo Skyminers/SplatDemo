@@ -6,19 +6,30 @@ in vec3 normal;
 in vec3 worldPos;
 in float ourAlpha;
 in vec2 NoiseTexCoord;
+in vec4 fragPosLightSpace;
 
 uniform vec3 lightColor;
 uniform vec3 lightPos;
 uniform vec3 cameraPos;
 uniform sampler2D NoiseTexture;
+uniform sampler2D shadowMap;
 
 #define ColorThreshold 0.8
 #define EdgeThreshold 0.95
-#define SecondThreshold 0.5
-#define NoiseThreshold 0.5
+#define SecondThreshold 0.3
+#define NoiseThreshold 0.65
 
-float cookTorranceSpec(vec3 lightDir, vec3 viewDir, vec3 surfaceNormal, float r, float f);
-float beckmannDistribution(float NdotH, float f);
+float ShadowCalculation(vec4 fragPosLightSpace){
+    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+    projCoords = projCoords * 0.5 + 0.5;
+    float closestDepth = texture(shadowMap, projCoords.xy).r;
+    float currentDepth = projCoords.z;
+
+    //return closestDepth;
+    float shadow = currentDepth > closestDepth ? 1.0 : 0.0;
+
+    return shadow;
+}
 
 void main() {
     float globalAlpha = 0.3;
@@ -43,7 +54,7 @@ void main() {
     specular = max(0.0, ourAlpha-0.6) * specular;
 
     
-    // TODO: ourAlpha 表示涂色强度，用这个值来进行噪声混合
+    // ourAlpha 表示涂色强度，用这个值来进行噪声混合
     vec4 Noise = texture(NoiseTexture, NoiseTexCoord); 
     float NoiseValue = Noise.x;
     //float NoiseValue = 0.5;
@@ -65,8 +76,11 @@ void main() {
     else {//take ground texture
         resultColor = groundColor;
     }
-    vec3 result = (global + diffuse + specular) * resultColor;
+    // Calculate the shadow
+    float shadow = ShadowCalculation(fragPosLightSpace);
+
+    vec3 result = (global + (1.0 - shadow) * (diffuse + specular)) * resultColor;
     FragColor = vec4(result, 1);//vec4(1.0, 0.5, 0.2, 1.0);
-    //FragColor = Noise;
+    //FragColor = vec4(shadow, shadow, shadow, 1.0);
     //FragColor = vec4(1,0,0,1);
 }

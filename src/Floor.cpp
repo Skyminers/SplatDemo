@@ -8,8 +8,8 @@
 #include <vector>
 #include <queue>
 #include <set>
-#include <iostream>
 #include "defineList.h"
+#include <iostream>
 
 std::vector<float> floorVertices;
 std::vector<unsigned int> floorElement;
@@ -17,6 +17,8 @@ std::vector<unsigned int> floorElement;
 unsigned int floorVAO, floorVBO, floorEBO;
 unsigned int floorTexture; // unused
 unsigned int noiseTexture;
+unsigned int depthTexture, depthFBO;
+
 
 inline float floorRelocation(int x) {
     return 1.0 * (x - (FLOOR_SIZE/2)) / (FLOOR_SIZE/2)
@@ -54,14 +56,14 @@ void genFloorVertices(){
             floorElement.push_back(idu);
 
             // a triangle
-           floorElement.push_back(idu);
-           floorElement.push_back(idv);
-           floorElement.push_back(idy);
+//            floorElement.push_back(idu);
+//            floorElement.push_back(idv);
+//            floorElement.push_back(idy);
 
             // an amazing effect !!!
-            // floorElement.push_back(idx);
-            // floorElement.push_back(idy);
-            // floorElement.push_back(idv);
+            floorElement.push_back(idx);
+            floorElement.push_back(idy);
+            floorElement.push_back(idv);
         }
     }
 }
@@ -69,7 +71,7 @@ bool getTextureID(unsigned int &ID, const char *s){
     int width, height, nrChannels;
     unsigned char *data = stbi_load(s, &width, &height, &nrChannels, 0);
     if(!data){
-        std::cerr << "Failed to open img." << std::endl;
+        //std::cerr << "Failed to open img." << std::endl;
         return false;
     }
 
@@ -94,7 +96,7 @@ void floorInit(std::string NoiseImgPath){
     glGenBuffers(1, &floorEBO);
 
     glBindVertexArray(floorVAO);
-    
+
     glBindBuffer(GL_ARRAY_BUFFER, floorVBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(float )*floorVertices.size(), &floorVertices[0], GL_STATIC_DRAW);
     unsigned int floorElementSize = FLOOR_ELEMENT_COUNT*sizeof(float);
@@ -106,12 +108,12 @@ void floorInit(std::string NoiseImgPath){
     glEnableVertexAttribArray(2);
     glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, floorElementSize, (void*)(7*sizeof(float)));
     glEnableVertexAttribArray(3);
-    
+
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, floorEBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int)*floorElement.size(), &floorElement[0], GL_STATIC_DRAW);
-   
+
     if(!getTextureID(noiseTexture, NoiseImgPath.c_str())) {
-        std::cerr<<"get noise texture failed!"<<std::endl;
+//        std::cerr<<"get noise texture failed!"<<std::endl;
     }
 
     glBindVertexArray(0);
@@ -121,6 +123,8 @@ void drawFloor(){
     glBindVertexArray(floorVAO);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, noiseTexture);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, depthTexture);
     glBindBuffer(GL_ARRAY_BUFFER, floorVBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(float)*floorVertices.size(), &floorVertices[0], GL_STATIC_DRAW);
     glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, FLOOR_ELEMENT_COUNT*sizeof(float), (void*)(6*sizeof(float)));
@@ -213,4 +217,36 @@ bool BulletPos::checkPos() {
 
 bool checkPos(float x, float z){
     return x >= -FLOOR_MAX_POSITION && x <= FLOOR_MAX_POSITION && z >= -FLOOR_MAX_POSITION && z <= FLOOR_MAX_POSITION;
+}
+
+void shadowInit(){
+    glGenFramebuffers(1, &depthFBO);
+
+    //Generate a empty texture
+    glGenTextures(1, &depthTexture);
+    glBindTexture(GL_TEXTURE_2D, depthTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    // Bind frame buffer
+    glBindFramebuffer(GL_FRAMEBUFFER, depthFBO);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTexture, 0);
+    glDrawBuffer(GL_NONE);
+    glReadBuffer(GL_NONE);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void shadowBind(){
+    glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
+    glBindFramebuffer(GL_FRAMEBUFFER, depthFBO);
+    glClear(GL_DEPTH_BUFFER_BIT);
+}
+
+void shadowUnBind(){
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glViewport(0, 0, SCR_WIDTH*2, SCR_HEIGHT*2); // TODO: 为什么 SCR_WIDTH 需要设置为 2 倍 ？
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }

@@ -13,6 +13,8 @@
 #include <Floor.h>
 #include <PlayerView.h>
 #include <GameLogic.h>
+#include "defineList.h"
+#include "Shadow.h"
 
 void ShadersInit();
 bool getTextureID(unsigned int &ID, char *s);
@@ -20,5 +22,6 @@ void renderSkybox();
 void renderFloor();
 void renderBullet(Bullet* bullet, float time);
 void renderPlayer(Player* player, float time);
+void renderShadowDepth(vector<Player*> playerList, vector<Bullet*> bulletList);
 
 #endif

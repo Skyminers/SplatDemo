@@ -2,12 +2,11 @@
 #define STB_IMAGE_STATIC
 
 #include <Renderer.h>
-#include "defineList.h"
 
 extern Camera camera;
 glm::mat4 projection, view, model;
 
-Shaders *floorShader, *skyBoxShader, *playerShader, *bulletShader;
+Shaders *floorShader, *skyBoxShader, *playerShader, *bulletShader, *shadowShader;
 
 void ShadersInit() {
     floorShader = new Shaders(  "../src/shaders/floorVS.glsl", 
@@ -18,10 +17,13 @@ void ShadersInit() {
                                 "../src/shaders/playerFS.glsl");
     bulletShader = new Shaders("../src/shaders/playerVS.glsl",
                                 "../src/shaders/playerFS.glsl");
+    shadowShader = new Shaders("../src/shaders/shadowVS.glsl",
+                               "../src/shaders/shadowFS.glsl");
     //    unsigned int floorTexture;
     //    if(!getTextureID(floorTexture, "../img/floor.jpg")) return 0;
     skyBoxInit("../resource/texture/skybox");
     floorInit("../resource/texture/Noise.png");
+    shadowInit();
     bulletRenderInit();
     playerRenderInit();
 }
@@ -32,8 +34,17 @@ void renderFloor() {
     floorShader->setMat4("projection", projection);
     floorShader->setMat4("model", model);
     floorShader->setVec3("lightColor", 1.0f, 1.0f, 1.0f);
-    floorShader->setVec3("lightPos", 2*FLOOR_MAX_POSITION, 100.0f, 0.5*FLOOR_MAX_POSITION);
+    floorShader->setVec3("lightPos", LIGHT_POS);
     floorShader->setVec3("cameraPos", (camera.bind())?camera.getPlayerPos():camera.getPosition());
+
+    float near_plane = -100.0f, far_plane = 100.0f;
+    glm::mat4 lightProjection = glm::ortho(-30.0f, 30.0f, -50.0f, 50.0f, near_plane, far_plane);
+    glm::mat4 lightView = glm::lookAt(glm::vec3(SHADOW_LIGHT_POS), glm::vec3(SHADOW_WATCH_POS), glm::vec3(0.0, 0.0, 1.0));
+    glm::mat4 lightSpaceMatrix = lightProjection * lightView;
+    floorShader->setMat4("lightSpaceMatrix", lightSpaceMatrix);
+    floorShader->setInt("NoiseTexture", 0);
+    floorShader->setInt("shadowMap", 1);
+
     drawFloor();
 }
 
@@ -72,6 +83,34 @@ void renderPlayer(Player* player, float time) {
     drawPlayer();
 }
 
+void renderShadowDepth(vector<Player*> playerList, vector<Bullet*> bulletList){
+    float near_plane = -100.0f, far_plane = 100.0f;
+    glm::mat4 lightProjection = glm::ortho(-30.0f, 30.0f, -50.0f, 50.0f, near_plane, far_plane);
+    glm::mat4 lightView = glm::lookAt(glm::vec3(SHADOW_LIGHT_POS), glm::vec3(SHADOW_WATCH_POS), glm::vec3(0.0, 0.0, 1.0));
+    glm::mat4 lightSpaceMatrix = lightProjection * lightView;
+    // render scene from light's point of view
+    shadowShader->useProgram();
+    shadowShader->setMat4("lightSpaceMatrix", lightSpaceMatrix);
+    shadowBind();
+    for(auto player: playerList){
+        glm::mat4 model;
+        float ratio = player->getHalfLength();
+        model = glm::translate(model, player->getPos() + glm::vec3(0, ratio, 0));
+        model = glm::scale(model, glm::vec3(ratio, ratio, ratio));
+        model = glm::rotate(model, glm::radians(player->rotateAngle()), glm::vec3(0, 1, 0));
+        shadowShader->setMat4("model", model);
+        drawPlayer();
+    }
+    for(auto bullet: bulletList){
+        glm::mat4 model;
+        model = glm::translate(model, bullet->getPos());
+        float ratio = bullet->getRadius();
+        model = glm::scale(model, glm::vec3(ratio, ratio, ratio));
+        shadowShader->setMat4("model", model);
+        drawBullet();
+    }
+    shadowUnBind();
+}
 
 // Read img file and generate ID of texture.
 // -----------------------------------------

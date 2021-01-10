@@ -46,7 +46,7 @@ if(APPLE)
                         src/SkyBox.cpp
                         src/Floor.cpp
                         src/PlayerView.cpp
-                        src/PhysicalEngine.cpp src/include/defineList.h)
+                        src/PhysicalEngine.cpp src/include/defineList.h src/Shadow.cpp src/include/Shadow.h)
 
     add_executable(SplatDemo ${SOURCE_FILES})
 
