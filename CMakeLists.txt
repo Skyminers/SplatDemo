@@ -32,7 +32,11 @@ if(APPLE)
     # 添加目标链接
     set(GLEW_LINK /usr/local/Cellar/glew/2.2.0/lib/libGLEW.2.2.dylib)
     set(GLFW_LINK /usr/local/Cellar/glfw/3.3.2/lib/libglfw.3.dylib)
-    link_libraries(${OPENGL} ${GLEW_LINK} ${GLFW_LINK})
+    set(IRR_KLANG ${PROJECT_SOURCE_DIR}/lib/macOS)
+    link_libraries(${OPENGL} ${GLEW_LINK} ${GLFW_LINK}
+                    ${IRR_KLANG}/libirrklang.dylib
+                    ${IRR_KLANG}/ikpFLAC.dylib
+                    ${IRR_KLANG}/ikpMP3.dylib)
 
     # 执行编译命令
     # 这个glad.c在第2步中说过要拉到项目中，注意路径
@@ -46,7 +50,7 @@ if(APPLE)
                         src/SkyBox.cpp
                         src/Floor.cpp
                         src/PlayerView.cpp
-                        src/PhysicalEngine.cpp src/include/defineList.h src/Shadow.cpp src/include/Shadow.h)
+                        src/PhysicalEngine.cpp src/include/defineList.h src/Shadow.cpp src/include/Shadow.h src/Music.cpp src/include/Music.h)
 
     add_executable(SplatDemo ${SOURCE_FILES})
 

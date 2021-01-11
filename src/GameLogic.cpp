@@ -1,5 +1,6 @@
 #include "GameLogic.h"
 #include "Floor.h"
+#include "Music.h"
 
 random_device e;
 uniform_real_distribution<float> u(-0.5, 0.5);
@@ -55,7 +56,7 @@ Player::Player(glm::vec3 pos, glm::vec3 color, unsigned int teamid, glm::vec3 di
 }
 
 bool Player::checkPos(float x, float z) {
-    return (fabs(x) <= FLOOR_MAX_POSITION - 5.0f && fabs(z) <= FLOOR_MAX_POSITION - 5.0f);
+    return (fabs(x) <= FLOOR_MAX_POSITION - 1.0f && fabs(z) <= FLOOR_MAX_POSITION - 1.0f);
 }
 
 void Player::startJump(float time, float v) {
@@ -237,6 +238,7 @@ void Player::deadBomb(float time, unsigned int tid) {
         updateVectors();
         shoot(gunDirection, time, tid, true);
     }
+    playBloomSound();
 }
 
 const float colorEps = 1e-3;

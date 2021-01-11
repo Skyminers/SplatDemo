@@ -56,14 +56,14 @@ void genFloorVertices(){
             floorElement.push_back(idu);
 
             // a triangle
-//            floorElement.push_back(idu);
-//            floorElement.push_back(idv);
-//            floorElement.push_back(idy);
+            floorElement.push_back(idu);
+            floorElement.push_back(idv);
+            floorElement.push_back(idy);
 
             // an amazing effect !!!
-            floorElement.push_back(idx);
-            floorElement.push_back(idy);
-            floorElement.push_back(idv);
+//            floorElement.push_back(idx);
+//            floorElement.push_back(idy);
+//            floorElement.push_back(idv);
         }
     }
 }

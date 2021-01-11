@@ -1,4 +1,5 @@
-#include <Camera.h>
+#include "Camera.h"
+#include "Music.h"
 
 Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch)
     : Front(glm::vec3(0.0f, 0.0f, -1.0f)), speed(SPEED), sensitivity(SENSITIVITY)
@@ -121,6 +122,7 @@ void Camera::processKey(cameraMovement key, float deltaTime, float nowTime) {
             if (shootJitter < 0.05f) break;
             if (bindToPlayer) {
                 shooting = true;
+                playShootSound();
                 player->shoot(Front, nowTime);
             }
             shootJitter = 0.0f;
