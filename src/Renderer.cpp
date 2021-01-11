@@ -91,6 +91,19 @@ void renderPlayer(Player* player, float time) {
     drawPlayer();
 }
 
+void renderParticle(Particle* particle, float time) {
+    bulletShader->useProgram();
+    glm::mat4 model;
+    model = glm::translate(model, particle->getPos());
+    float ratio = 0.1;
+    model = glm::scale(model, glm::vec3(ratio, ratio, ratio));
+    bulletShader->setMat4("projection", projection);
+    bulletShader->setMat4("view", view);
+    bulletShader->setMat4("model", model);
+    bulletShader->setVec3("color", particle->getColor());
+    drawParticle();
+}
+
 void renderShadowDepth(vector<Player*> playerList, vector<Bullet*> bulletList){
     float near_plane = -100.0f, far_plane = 100.0f;
     glm::mat4 lightProjection = glm::ortho(-30.0f, 30.0f, -60.0f, 50.0f, near_plane, far_plane);

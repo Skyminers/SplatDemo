@@ -81,3 +81,7 @@ void drawPlayer() {
     glBindVertexArray(playerVAO);
     glDrawElements(GL_TRIANGLES, playerElement.size() * sizeof(unsigned int), GL_UNSIGNED_INT, nullptr);
 }
+void drawParticle() {
+    glBindVertexArray(bulletVAO);
+    glDrawElements(GL_TRIANGLES, bulletElement.size() * sizeof(unsigned int), GL_UNSIGNED_INT, nullptr);
+}

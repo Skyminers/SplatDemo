@@ -145,6 +145,15 @@ void GameWindow::run() {
             }
             bullet++;
         }
+        for (auto particle = Particle::particleQueue.begin(); particle != Particle::particleQueue.end();) {
+            //GameLogic::checkParticle(*bullet, currentFrame);
+            (*particle)->update(deltaTime);
+            if (!(*particle)->isAlive()) {
+                Particle::particleQueue.erase(particle);
+                continue;
+            }
+            particle++;
+        }
 
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -166,7 +175,10 @@ void GameWindow::run() {
         for (auto player : Player::playerQueue) {
             renderPlayer(player, currentFrame);
         }
-
+        for (auto particle : Particle::particleQueue) {
+            renderParticle(particle, currentFrame);
+        }
+        
         renderFloor();
         renderSkybox();
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)

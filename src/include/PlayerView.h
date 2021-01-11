@@ -13,5 +13,6 @@ void bulletRenderInit();
 void playerRenderInit();
 void drawBullet();
 void drawPlayer();
+void drawParticle();
 
 #endif //SPLATDEMO_PLAYERVIEW_H

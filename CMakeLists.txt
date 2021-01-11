@@ -4,11 +4,14 @@ project(SplatDemo)
 set(CMAKE_CXX_STANDARD 14)
 
 if(WIN32)
+    set(IrrKlang_DIR ${PROJECT_SOURCE_DIR}/lib/windows/irrKlang) 
+    find_package (IrrKlang REQUIRED)
     include_directories(include
                         src/include)
-
+    
     link_directories(${PROJECT_SOURCE_DIR}/lib/windows)
-
+    
+    
     add_executable(SplatDemo    src/main.cpp 
                                 src/glad.c
                                 src/Shaders.cpp 
@@ -19,9 +22,10 @@ if(WIN32)
                                 src/SkyBox.cpp
                                 src/Floor.cpp
                                 src/PlayerView.cpp
-                                src/PhysicalEngine.cpp)
-
-    target_link_libraries(SplatDemo glfw3)
+                                src/PhysicalEngine.cpp
+                                src/Shadow.cpp 
+                                src/Music.cpp )
+    target_link_libraries(SplatDemo glfw3)# ${IRRKLANG_LIBRARY})
 endif()
 
 if(APPLE)
@@ -50,7 +54,9 @@ if(APPLE)
                         src/SkyBox.cpp
                         src/Floor.cpp
                         src/PlayerView.cpp
-                        src/PhysicalEngine.cpp src/include/defineList.h src/Shadow.cpp src/include/Shadow.h src/Music.cpp src/include/Music.h)
+                        src/PhysicalEngine.cpp 
+                        src/Shadow.cpp 
+                        src/Music.cpp)
 
     add_executable(SplatDemo ${SOURCE_FILES})
 

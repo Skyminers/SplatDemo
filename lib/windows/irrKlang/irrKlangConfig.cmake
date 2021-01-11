@@ -1,0 +1,22 @@
+find_path(IRRKLANG_INCLUDE_DIR NAMES irrKlang.h PATHS "${PROJECT_SOURCE_DIR}/include/irrKlang")
+message(STATUS "Using GCC")
+set (IRRKLANG_LIB_DIR "${PROJECT_SOURCE_DIR}/lib/windows/irrKlang/lib")
+message(STATUS "lib")
+set (IRRKLANG_BIN_DIR "${PROJECT_SOURCE_DIR}/lib/windows/irrKlang/bin")
+message(STATUS "bin")
+find_library(IRRKLANG_LIBRARY NAMES libirrKlang.a PATHS ${IRRKLANG_LIB_DIR})
+
+set(IRRKLANG_FOUND NO)
+if(IRRKLANG_LIBRARY AND IRRKLANG_INCLUDE_DIR)
+    set(IRRKLANG_FOUND YES)
+endif(IRRKLANG_LIBRARY AND IRRKLANG_INCLUDE_DIR)
+
+if(IRRKLANG_FOUND)
+    message(STATUS "IrrKlang found")
+
+    message(STATUS "IRRKLANG_LIBRARY = ${IRRKLANG_LIBRARY}")
+    message(STATUS "IRRKLANG_INCLUDE_DIR = ${IRRKLANG_INCLUDE_DIR}")
+    message(STATUS "IRRKLANG_BIN_DIR = ${IRRKLANG_BIN_DIR}")
+else()
+    message(STATUS "ERROR : IrrKlang NOT found !!!")
+endif()

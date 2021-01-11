@@ -10,6 +10,7 @@ const float eps = 1e-9;
 vector<Bullet*> Bullet::bulletQueue;
 vector<Bullet*> Bullet::deadBulletQueue;
 vector<Player*> Player::playerQueue;
+vector<Particle*> Particle::particleQueue;
 unsigned int Player::ID = 0;
 
 int GameLogic::playerNum;
@@ -182,7 +183,11 @@ void Player::update(float time) {
             else A += - otherFloorA * dir;
         }
         deltaTime = min(fabs(len) / fabs(floorA * deltaTime), deltaTime);
-        if (len > 0.1f) position_new += V * deltaTime + A * deltaTime * deltaTime / 2.0f;
+        if (len > 0.1f) {
+            position_new += V * deltaTime + A * deltaTime * deltaTime / 2.0f;
+            if(diving) Particle::particleQueue.push_back(
+                new Particle(position, glm::vec3(0,1,0),0.3,color,0.1));
+        }
         V += A * deltaTime;
     }
     position_old = position;
@@ -254,6 +259,22 @@ int Player::getColorID(float x, float z) {
         return i;
     }
     return -1;
+}
+// --------------------------- Class Particle ---------------------------
+Particle::Particle(glm::vec3 pos, glm::vec3 dir, float life, glm::vec3 color, float speed) {
+    this->position = pos;
+    this->color = color;
+    this->speed = speed + u(e) * 2;
+    this->speedvec = normalize(dir)*this->speed;
+    this->life = life;
+    this->g = 25.0f;
+    //this->teamid = id;
+}
+void Particle::update(float time) {
+    glm::vec3 nspeed = speedvec + g*time;
+    position = position + (speedvec + nspeed) * glm::vec3(0.5,0.5,0.5) * time;
+    life -= time;
+    if(life<0) alive = false;
 }
 
 void GameLogic::init(int tNum, int pNum) {

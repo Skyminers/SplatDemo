@@ -62,6 +62,15 @@ private:
 
 };
 
+class Particle : public Object {
+public:
+    static vector<Particle*> particleQueue;
+    float life;
+    glm::vec3 speedvec;
+    Particle(glm::vec3 pos, glm::vec3 dir, float life, glm::vec3 color = glm::vec3(1.0f, 0.0f, 0.0f), float speed = 20.0f);
+    void update(float time);
+};
+
 class GameLogic {
 public:
     static vector<glm::vec3> colors;
