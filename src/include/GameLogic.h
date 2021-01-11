@@ -38,7 +38,7 @@ public:
 
     void startJump(float time, float v = 8.0f);
     void jumpUpdate(float time);
-    void shoot(glm::vec3 front, float time, glm::vec3 newColor = glm::vec3(0.0f, 0.0f, 0.0f), bool flag = false);
+    void shoot(glm::vec3 front, float time, unsigned int tid = 0, bool flag = false);
     int HP() const;
     void update(float time);
     void collisionSolve();
@@ -48,7 +48,7 @@ public:
     void edgeSolve();
     void dive(float time);
     bool& Attacked();
-    void deadBomb(float time, glm::vec3 newColor);
+    void deadBomb(float time, unsigned int tid);
     static bool checkPos(float x, float z);
     static int getColorID(float x, float z);
 

@@ -78,11 +78,11 @@ void Player::jumpUpdate(float time) {
     position_new.y = height;
 }
 
-void Player::shoot(glm::vec3 front, float time, glm::vec3 newColor, bool flag) {
+void Player::shoot(glm::vec3 front, float time, unsigned int tid, bool flag) {
     if (diving) return;
     glm::vec3 pos = position + front * 1.0f + glm::vec3(u(e), uu(e), u(e));
     if (flag)
-        Bullet::bulletQueue.push_back(new Bullet(pos, front, time, teamid, newColor));
+        Bullet::bulletQueue.push_back(new Bullet(pos, front, time, tid, GameLogic::colors[tid]));
     else
         Bullet::bulletQueue.push_back(new Bullet(pos, front, time, teamid, color));
 }
@@ -229,12 +229,12 @@ bool& Player::Attacked() {
     return attacked;
 }
 
-void Player::deadBomb(float time, glm::vec3 newColor) {
+void Player::deadBomb(float time, unsigned int tid) {
     for (int i = 0; i < 20; ++i) {
         pitch = 69.0f + 20.0f * uu(e);
         yaw = 360.f * u(e);
         updateVectors();
-        shoot(gunDirection, time, newColor, true);
+        shoot(gunDirection, time, tid, true);
     }
 }
 
@@ -322,9 +322,9 @@ void GameLogic::checkBullet(Bullet* bullet, float time) {
             }
             player->hp--;
             player->attacked = true;
-            if (player->hp <= 0) {
+            if (player->hp == 0) {
                 player->alive = false;
-                player->deadBomb(time, bullet->color);
+                player->deadBomb(time, bullet->teamid);
             }
             player->halfLength = 0.6f + 0.4f * (float)player->hp / 50.0f;
             bullet->alive = false;
