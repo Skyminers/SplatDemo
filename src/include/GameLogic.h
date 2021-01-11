@@ -48,7 +48,7 @@ public:
     void edgeSolve();
     void dive(float time);
     bool& Attacked();
-    void deadBomb(float time);
+    void deadBomb(float time, glm::vec3 newColor);
     static bool checkPos(float x, float z);
     static int getColorID(float x, float z);
 

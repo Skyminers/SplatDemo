@@ -229,12 +229,12 @@ bool& Player::Attacked() {
     return attacked;
 }
 
-void Player::deadBomb(float time) {
+void Player::deadBomb(float time, glm::vec3 newColor) {
     for (int i = 0; i < 20; ++i) {
         pitch = 69.0f + 20.0f * uu(e);
         yaw = 360.f * u(e);
         updateVectors();
-        shoot(gunDirection, time, color, true);
+        shoot(gunDirection, time, newColor, true);
     }
 }
 
@@ -324,7 +324,7 @@ void GameLogic::checkBullet(Bullet* bullet, float time) {
             player->attacked = true;
             if (player->hp <= 0) {
                 player->alive = false;
-                player->deadBomb(time);
+                player->deadBomb(time, bullet->color);
             }
             player->halfLength = 0.6f + 0.4f * (float)player->hp / 50.0f;
             bullet->alive = false;
