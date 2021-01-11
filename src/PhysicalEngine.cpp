@@ -97,12 +97,6 @@ bool PhysicalEngine::intersect(glm::vec3 p1, glm::vec3 p2, glm::vec3 boxPoint, f
         t1 = min(t1, t_far);
         if (t0 > t1 + eps) return false;
     }
-//    cout << "x: " << min_x << " " << max_x << endl;
-//    cout << "z: " << min_z << " " << max_z << endl;
-//    cout << p1.x << " " << p1.z << " " << p1.y << endl;
-//    cout << p2.x << " " << p2.z << " " << p2.y << endl;
-//    cout << t0 << " " << t1 << endl;
-//    cout << "true" << endl;
     return true;
 }
 

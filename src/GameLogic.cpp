@@ -79,12 +79,12 @@ void Player::jumpUpdate(float time) {
     position_new.y = height;
 }
 
-void Player::shoot(glm::vec3 front, float time, unsigned int tid, bool flag) {
+void Player::shoot(glm::vec3 front, float time, unsigned int tid, bool flag, float speed) {
     if (diving) return;
     if (!alive && !flag) return;
     glm::vec3 pos = position + front * 1.0f + glm::vec3(u(e), uu(e) + 0.5f, u(e));
     if (flag)
-        Bullet::bulletQueue.push_back(new Bullet(pos, front, time, tid, GameLogic::colors[tid]));
+        Bullet::bulletQueue.push_back(new Bullet(pos, front, time, tid, GameLogic::colors[tid], speed));
     else
         Bullet::bulletQueue.push_back(new Bullet(pos, front, time, teamid, color));
 }
@@ -113,8 +113,8 @@ void Player::randomAct(float time, float deltaTime) {
     }
     if (uu(e) < 0.1) {
         pitch_new += u(e) * 5;
-        if (pitch_new < -20.0f) pitch_new = -20.0f;
-        if (pitch_new > 15.0f) pitch_new = 15.0f;
+        if (pitch_new < -15.0f) pitch_new = -15.0f;
+        if (pitch_new > 20.0f) pitch_new = 20.0f;
     }
     updateVectors();
     if (uu(e) < 0.6) {
@@ -125,7 +125,7 @@ void Player::randomAct(float time, float deltaTime) {
         else if (p < 0.8) V += Right * addV;
         else V -= Right * addV;
     }
-    if (uu(e) < 0.5) shoot(gunDirection, time);
+    if (uu(e) < 0.7) shoot(gunDirection, time);
     if (uu(e) < 0.05) dive(time);
 }
 
@@ -237,7 +237,7 @@ void Player::deadBomb(float time, unsigned int tid) {
         pitch = 69.0f + 20.0f * uu(e);
         yaw = 360.f * u(e);
         updateVectors();
-        shoot(gunDirection, time, tid, true);
+        shoot(gunDirection, time, tid, true, 30.0f);
     }
     playBloomSound();
 }
