@@ -9,7 +9,7 @@ GameWindow window;
 int main() {
     //Overall Initialization
     ShadersInit();
-    GameLogic::init(2, 3);
+    GameLogic::init(2, 20);
 
     // render loop
     // -----------

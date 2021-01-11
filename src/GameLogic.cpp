@@ -80,6 +80,7 @@ void Player::jumpUpdate(float time) {
 
 void Player::shoot(glm::vec3 front, float time, unsigned int tid, bool flag) {
     if (diving) return;
+    if (!alive && !flag) return;
     glm::vec3 pos = position + front * 1.0f + glm::vec3(u(e), uu(e), u(e));
     if (flag)
         Bullet::bulletQueue.push_back(new Bullet(pos, front, time, tid, GameLogic::colors[tid]));
