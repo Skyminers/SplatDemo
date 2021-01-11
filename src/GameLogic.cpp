@@ -78,10 +78,13 @@ void Player::jumpUpdate(float time) {
     position_new.y = height;
 }
 
-void Player::shoot(glm::vec3 front, float time) {
+void Player::shoot(glm::vec3 front, float time, glm::vec3 newColor, bool flag) {
     if (diving) return;
     glm::vec3 pos = position + front * 1.0f + glm::vec3(u(e), uu(e), u(e));
-    Bullet::bulletQueue.push_back(new Bullet(pos, front, time, teamid, color));
+    if (flag)
+        Bullet::bulletQueue.push_back(new Bullet(pos, front, time, teamid, newColor));
+    else
+        Bullet::bulletQueue.push_back(new Bullet(pos, front, time, teamid, color));
 }
 
 int Player::HP() const {
@@ -193,6 +196,9 @@ void Player::collisionSolve() {
     position.z = position_old.z;
     V = -V;
     yaw = yaw_old;
+    if (!inControl) {
+        yaw += 180.0f;
+    }
     pitch = pitch_old;
 }
 
@@ -225,10 +231,10 @@ bool& Player::Attacked() {
 
 void Player::deadBomb(float time) {
     for (int i = 0; i < 20; ++i) {
-        pitch = 30.0f + 20.0f * uu(e);
+        pitch = 69.0f + 20.0f * uu(e);
         yaw = 360.f * u(e);
         updateVectors();
-        shoot(gunDirection, time);
+        shoot(gunDirection, time, color, true);
     }
 }
 
@@ -266,7 +272,7 @@ void GameLogic::init(int tNum, int pNum) {
                 Player* p2 = Player::playerQueue[j];
                 if (PhysicalEngine::intersect(*p1, *p2)) { flag = 1; break; }
             }
-            if (flag) p1->position = glm::vec3(u(e) * 45, 0.0f, u(e) * 45);
+            if (flag) p1->position = glm::vec3(u(e) * 90.0f, 0.0f, u(e) * 90.0f);
         }
     }
 }
@@ -283,6 +289,7 @@ void GameLogic::checkPlayer(float time, Player* player) {
                 if (p2->id == p1->id) continue;
                 if (PhysicalEngine::intersect(*p1, *p2)) {
                     p1->collisionSolve();
+                    if (!p1->inControl) p2->collisionSolve();
                     break;
                 }
             }
@@ -297,6 +304,7 @@ void GameLogic::checkPlayer(float time, Player* player) {
             if (p2->id == player->id) continue;
             if (PhysicalEngine::intersect(*player, *p2)) {
                 player->collisionSolve();
+                if (!player->inControl) p2->collisionSolve();
                 break;
             }
         }

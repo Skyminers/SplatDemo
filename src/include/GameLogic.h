@@ -38,7 +38,7 @@ public:
 
     void startJump(float time, float v = 8.0f);
     void jumpUpdate(float time);
-    void shoot(glm::vec3 front, float time);
+    void shoot(glm::vec3 front, float time, glm::vec3 newColor = glm::vec3(0.0f, 0.0f, 0.0f), bool flag = false);
     int HP() const;
     void update(float time);
     void collisionSolve();
