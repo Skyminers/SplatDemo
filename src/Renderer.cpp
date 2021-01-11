@@ -38,7 +38,7 @@ void renderFloor() {
     floorShader->setVec3("cameraPos", (camera.bind())?camera.getPlayerPos():camera.getPosition());
 
     float near_plane = -100.0f, far_plane = 100.0f;
-    glm::mat4 lightProjection = glm::ortho(-30.0f, 30.0f, -50.0f, 50.0f, near_plane, far_plane);
+    glm::mat4 lightProjection = glm::ortho(-30.0f, 30.0f, -60.0f, 50.0f, near_plane, far_plane);
     glm::mat4 lightView = glm::lookAt(glm::vec3(SHADOW_LIGHT_POS), glm::vec3(SHADOW_WATCH_POS), glm::vec3(0.0, 0.0, 1.0));
     glm::mat4 lightSpaceMatrix = lightProjection * lightView;
     floorShader->setMat4("lightSpaceMatrix", lightSpaceMatrix);
@@ -93,7 +93,7 @@ void renderPlayer(Player* player, float time) {
 
 void renderShadowDepth(vector<Player*> playerList, vector<Bullet*> bulletList){
     float near_plane = -100.0f, far_plane = 100.0f;
-    glm::mat4 lightProjection = glm::ortho(-30.0f, 30.0f, -50.0f, 50.0f, near_plane, far_plane);
+    glm::mat4 lightProjection = glm::ortho(-30.0f, 30.0f, -60.0f, 50.0f, near_plane, far_plane);
     glm::mat4 lightView = glm::lookAt(glm::vec3(SHADOW_LIGHT_POS), glm::vec3(SHADOW_WATCH_POS), glm::vec3(0.0, 0.0, 1.0));
     glm::mat4 lightSpaceMatrix = lightProjection * lightView;
     // render scene from light's point of view
