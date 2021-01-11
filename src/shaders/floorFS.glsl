@@ -14,10 +14,10 @@ uniform vec3 cameraPos;
 uniform sampler2D NoiseTexture;
 uniform sampler2D shadowMap;
 
-#define ColorThreshold 0.8
-#define EdgeThreshold 0.95
-#define SecondThreshold 0.3
-#define NoiseThreshold 0.65
+#define ColorThreshold 0.0
+#define EdgeThreshold 0.5
+#define SecondThreshold -0.3
+#define NoiseThreshold 0.7
 
 float ShadowCalculation(vec4 fragPosLightSpace){
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
@@ -58,16 +58,16 @@ void main() {
     vec4 Noise = texture(NoiseTexture, NoiseTexCoord); 
     float NoiseValue = Noise.x;
     //float NoiseValue = 0.5;
-    //float EdgeDelta = 
+    float EdgeDelta = ourAlpha - NoiseValue;
     vec3 resultColor = ourColor;
     vec3 groundColor = vec3(0.6f,0.6f,0.6f);
-    if(ourAlpha>ColorThreshold) {
-        if(ourAlpha>EdgeThreshold) 
-            resultColor = ourColor*0.95+vec3(1,1,1)*NoiseValue*0.05;
-        else 
-            resultColor = ourColor*ourAlpha+vec3(1,1,1)*NoiseValue*0.05+groundColor*(0.95-ourAlpha);
+    if(EdgeDelta>=ColorThreshold) {
+        //if(EdgeDelta>EdgeThreshold) 
+            resultColor = ourColor*0.9+vec3(1,1,1)*NoiseValue*0.1;
+        //else 
+        //    resultColor = ourColor*ourAlpha+vec3(1,1,1)*NoiseValue*0.05+groundColor*(0.95-ourAlpha);
     }
-    else if(ourAlpha>SecondThreshold) {
+    else if(EdgeDelta>=SecondThreshold) {
         if(NoiseValue>NoiseThreshold) 
             resultColor = ourColor*ourAlpha+vec3(1,1,1)*NoiseValue*0.1+groundColor*(1.0-ourAlpha-NoiseValue*0.1);
         else 

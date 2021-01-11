@@ -242,6 +242,10 @@ void shadowBind(){
 
 void shadowUnBind(){
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glViewport(0, 0, SCR_WIDTH*2, SCR_HEIGHT*2); // TODO: 为什么 SCR_WIDTH 需要设置为 2 倍 ？
+    #ifdef __APPLE__
+        glViewport(0, 0, SCR_WIDTH*2, SCR_HEIGHT*2); // TODO: 为什么 SCR_WIDTH 需要设置为 2 倍 ？
+    #else
+        glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
+    #endif
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
