@@ -21,7 +21,7 @@ Bullet::Bullet(glm::vec3 pos, glm::vec3 dir, float time, unsigned int id, glm::v
     this->position = pos + glm::vec3(0.0f, radius, 0.0f);
     this->color = color;
     this->speed = speed + u(e) * 2;
-    this->g = 25.0f;
+    this->g = 35.0f;
     this->teamid = id;
 }
 
@@ -82,7 +82,7 @@ void Player::jumpUpdate(float time) {
 void Player::shoot(glm::vec3 front, float time, unsigned int tid, bool flag) {
     if (diving) return;
     if (!alive && !flag) return;
-    glm::vec3 pos = position + front * 1.0f + glm::vec3(u(e), uu(e), u(e));
+    glm::vec3 pos = position + front * 1.0f + glm::vec3(u(e), uu(e) + 0.5f, u(e));
     if (flag)
         Bullet::bulletQueue.push_back(new Bullet(pos, front, time, tid, GameLogic::colors[tid]));
     else
@@ -114,7 +114,7 @@ void Player::randomAct(float time, float deltaTime) {
     if (uu(e) < 0.1) {
         pitch_new += u(e) * 5;
         if (pitch_new < -20.0f) pitch_new = -20.0f;
-        if (pitch_new > 30.0f) pitch_new = 30.0f;
+        if (pitch_new > 15.0f) pitch_new = 15.0f;
     }
     updateVectors();
     if (uu(e) < 0.6) {
@@ -128,6 +128,7 @@ void Player::randomAct(float time, float deltaTime) {
     if (uu(e) < 0.5) shoot(gunDirection, time);
     if (uu(e) < 0.05) dive(time);
 }
+
 const float ourMAXV = 10.0f;
 const float MAXV = 6.0f;
 const float otherMAXV = 4.0f;

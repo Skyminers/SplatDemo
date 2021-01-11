@@ -32,7 +32,7 @@ public:
 private:
     constexpr static float YAW = -90.0f;
     constexpr static float PITCH = 0.0f;
-    constexpr static float SPEED = 5.0f;
+    constexpr static float SPEED = 10.0f;
     constexpr static float SENSITIVITY = 0.1f;
     constexpr static float ZOOM = 70.0f;
 

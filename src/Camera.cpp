@@ -119,7 +119,7 @@ void Camera::processKey(cameraMovement key, float deltaTime, float nowTime) {
             jitter = 0.0f;
             break;
         case SHOOT:
-            if (shootJitter < 0.05f) break;
+            if (shootJitter < 0.08f) break;
             if (bindToPlayer) {
                 shooting = true;
                 playShootSound();

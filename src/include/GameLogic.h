@@ -18,7 +18,7 @@ public:
     friend class GameLogic;
     static vector<Bullet*> bulletQueue;
     static vector<Bullet*> deadBulletQueue;
-    Bullet(glm::vec3 pos, glm::vec3 dir, float time, unsigned int id, glm::vec3 color = glm::vec3(1.0f, 0.0f, 0.0f), float speed = 20.0f);
+    Bullet(glm::vec3 pos, glm::vec3 dir, float time, unsigned int id, glm::vec3 color = glm::vec3(1.0f, 0.0f, 0.0f), float speed = 40.0f);
     void update(float time);
     static bool checkPos(float x, float z);
 
