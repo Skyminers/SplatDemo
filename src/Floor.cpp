@@ -162,32 +162,22 @@ void plant(float x, float z, glm::vec3 color){
         if(dis > OUT_RADIUS*OUT_RADIUS) continue;
 
         int id = nowPos.mapToId();
-        int idstartpos = id*FLOOR_ELEMENT_COUNT;
+        int idStartPos = id * FLOOR_ELEMENT_COUNT;
 
-        float& colorAlpha = floorVertices[idstartpos + 6];
+        float& colorAlpha = floorVertices[idStartPos + 6];
         if(dis <= IN_RADIUS*IN_RADIUS){
             colorAlpha = 1.0f;
         }else{ // calc difference
             float tFactor = 1.0f/ (OUT_RADIUS - IN_RADIUS);
             float d = sqrt(dis);
             float t = 1.0f - (d - IN_RADIUS)*tFactor;
-//            glm::vec3 ori(floorVertices[id*7 + 3],
-//                      floorVertices[id*7 + 4],
-//                      floorVertices[id*7 + 5]);
-//            if(ori != color){
-//                floorVertices[id*7 + 6] = t;
-//            }else
 
             colorAlpha = std::min(colorAlpha + t, 1.0f);
-
-            /*if(floorVertices[idstartpos + 6] > 1){
-                floorVertices[idstartpos + 6] = 1.0f;
-            }*/
         }
 
-        floorVertices[idstartpos + 3] = color[0];
-        floorVertices[idstartpos + 4] = color[1];
-        floorVertices[idstartpos + 5] = color[2];
+        floorVertices[idStartPos + 3] = color[0];
+        floorVertices[idStartPos + 4] = color[1];
+        floorVertices[idStartPos + 5] = color[2];
 
         // find adjacent
         for(int i = 0;i < 4; ++ i){
@@ -198,7 +188,12 @@ void plant(float x, float z, glm::vec3 color){
             }
         }
     }
+}
 
+glm::vec3 getColorAt(float x, float z){
+    int id = BulletPos(int(x/FLOOR_UNIT)  + (FLOOR_SIZE/2),int(z/FLOOR_UNIT) + (FLOOR_SIZE/2)).mapToId();
+    int idStartPos = id*FLOOR_ELEMENT_COUNT;
+    return glm::vec3(floorVertices[idStartPos + 3], floorVertices[idStartPos + 4], floorVertices[idStartPos + 5]);
 }
 
 BulletPos::BulletPos(const int &a, const int &b): x(a), z(b) {}
