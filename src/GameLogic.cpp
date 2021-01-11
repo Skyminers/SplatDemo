@@ -11,6 +11,10 @@ vector<Bullet*> Bullet::deadBulletQueue;
 vector<Player*> Player::playerQueue;
 unsigned int Player::ID = 0;
 
+int GameLogic::playerNum;
+int GameLogic::teamNum;
+vector<glm::vec3> GameLogic::colors;
+
 Bullet::Bullet(glm::vec3 pos, glm::vec3 dir, float time, unsigned int id, glm::vec3 color, float speed):
     bornPosition(pos), bornDirection(dir), bornTime(time) {
     this->position = pos + glm::vec3(0.0f, radius, 0.0f);
@@ -32,7 +36,7 @@ void Bullet::update(float time) {
     if (y <= 0.0f) {
         y = 0.0f;
         alive = false;
-        if (deadBulletQueue.size() < 100 && checkPos(position.x, position.z)) {
+        if (deadBulletQueue.size() < 1000 && checkPos(position.x, position.z)) {
             deadBulletQueue.push_back(this);
         }
     }
@@ -55,7 +59,7 @@ bool Player::checkPos(float x, float z) {
 }
 
 void Player::startJump(float time, float v) {
-    if (jumpPhase == 1) return;
+    if (jumpPhase == 1 || diving) return;
     jumpPhase++;
     jumpTime = time;
     velocityY += v;
@@ -75,6 +79,7 @@ void Player::jumpUpdate(float time) {
 }
 
 void Player::shoot(glm::vec3 front, float time) {
+    if (diving) return;
     glm::vec3 pos = position + front * 1.0f + glm::vec3(u(e), uu(e), u(e));
     Bullet::bulletQueue.push_back(new Bullet(pos, front, time, teamid, color));
 }
@@ -103,7 +108,7 @@ void Player::randomAct(float time, float deltaTime) {
     }
     if (uu(e) < 0.1) {
         pitch_new += u(e) * 5;
-        if (pitch_new < -50.0f) pitch_new = -50.0f;
+        if (pitch_new < -20.0f) pitch_new = -20.0f;
         if (pitch_new > 30.0f) pitch_new = 30.0f;
     }
     updateVectors();
@@ -115,31 +120,61 @@ void Player::randomAct(float time, float deltaTime) {
         else if (p < 0.8) V += Right * addV;
         else V -= Right * addV;
     }
-    if (uu(e) < 0.2) shoot(gunDirection, time);
+    if (uu(e) < 0.5) shoot(gunDirection, time);
+    if (uu(e) < 0.05) dive(time);
 }
-
+const float ourMAXV = 10.0f;
 const float MAXV = 6.0f;
-const float floorF = 6.0f;
+const float otherMAXV = 4.0f;
+const float ourFloorF = 2.0f;
+const float floorF = 5.0f;
+const float otherFloorF = 10.0f;
+const float airF = 1.0f;
+const float diveV = 5.0f;
+const float MINY = 0.05f;
 
 void Player::update(float time) {
     float deltaTime = time - moveTime;
-    //cout << "player: " << deltaTime << " " << time << " " << pressTime << endl;
-    //cout << frontA << " " << frontV << endl;
-    //if (id == 0) cout << frontA << " " << frontV << endl;
     if (!inControl) randomAct(time, deltaTime);
     if (jumpPhase) jumpUpdate(time);
+    if (time - pressTime > 0.2f) diving = false;
+    int colorID = getColorID(position.x, position.z);
+    if (colorID != teamid) diving = false;
+    if (diving) {
+        fateY -= deltaTime * diveV;
+        if (fateY < MINY) fateY = MINY;
+    } else if (fateY < 1.0f){
+        fateY += deltaTime * diveV;
+        if (fateY > 1.0f) fateY = 1.0f;
+    }
     float len =  glm::length(V);
-    if (len > MAXV - eps) {
-        float ratio = MAXV / len;
+    float maxV = MAXV;
+    if (!jumpPhase) {
+        if (colorID == -1) maxV = MAXV;
+        else if (colorID == teamid) {
+            if (diving) maxV = ourMAXV;
+            else maxV = MAXV;
+        } else maxV = otherMAXV;
+    }
+    if (len > maxV - eps) {
+        float ratio = maxV / len;
         frontV *= ratio;
         rightV *= ratio;
         V *= ratio;
-        len = MAXV;
+        len = maxV;
     }
     float floorA = floorF * halfLength * halfLength;
+    float airA = airF * halfLength * halfLength;
+    float ourFloorA = ourFloorF * halfLength * halfLength;
+    float otherFloorA = otherFloorF * halfLength * halfLength;
     if (len > eps) {
         glm::vec3 dir = glm::normalize(V);
-        glm::vec3 A = - floorA * dir;
+        glm::vec3 A = - airA * dir;
+        if (!jumpPhase) {
+            if (colorID == -1) A += - floorA * dir;
+            else if (colorID == teamid) A += - ourFloorA * dir;
+            else A += - otherFloorA * dir;
+        }
         deltaTime = min(fabs(len) / fabs(floorA * deltaTime), deltaTime);
         if (len > 0.1f) position_new += V * deltaTime + A * deltaTime * deltaTime / 2.0f;
         V += A * deltaTime;
@@ -175,14 +210,48 @@ void Player::edgeSolve() {
     }
 }
 
-int GameLogic::playerNum;
-int GameLogic::teamNum;
+void Player::dive(float time) {
+    if (jumpPhase) {
+        diving = false;
+        return;
+    }
+    diving = true;
+    pressTime = time;
+}
+
+bool& Player::Attacked() {
+    return attacked;
+}
+
+void Player::deadBomb(float time) {
+    for (int i = 0; i < 20; ++i) {
+        pitch = 30.0f + 20.0f * uu(e);
+        yaw = 360.f * u(e);
+        updateVectors();
+        shoot(gunDirection, time);
+    }
+}
+
+const float colorEps = 1e-3;
+
+int Player::getColorID(float x, float z) {
+    glm::vec3 c1 = getColorAt(x, z);
+    for (int i = 0; i < GameLogic::colors.size(); ++i) {
+        glm::vec3 c2 = GameLogic::colors[i];
+        if (fabs(c1.x - c2.x) > colorEps) continue;
+        if (fabs(c1.y - c2.y) > colorEps) continue;
+        if (fabs(c1.z - c2.z) > colorEps) continue;
+        return i;
+    }
+    return -1;
+}
 
 void GameLogic::init(int tNum, int pNum) {
     GameLogic::playerNum = pNum;
     GameLogic::teamNum = tNum;
     for (int i = 0; i < teamNum; ++i) {
         glm::vec3 color(uu(e), uu(e), uu(e));
+        colors.push_back(color);
         for (int j = 0; j < playerNum; ++j) {
             float px = u(e) * 45, py = u(e) * 45;
             Player::playerQueue.push_back(new Player(glm::vec3(px, 0.0f, py), color, i));
@@ -195,7 +264,7 @@ void GameLogic::init(int tNum, int pNum) {
             flag = 0;
             for (int j = 0; j < i; ++j) {
                 Player* p2 = Player::playerQueue[j];
-                if (PhysicalEngine::intersect(*p1, *p2)) flag = 1;
+                if (PhysicalEngine::intersect(*p1, *p2)) { flag = 1; break; }
             }
             if (flag) p1->position = glm::vec3(u(e) * 45, 0.0f, u(e) * 45);
         }
@@ -206,7 +275,7 @@ void GameLogic::checkPlayer(float time, Player* player) {
     if (player == nullptr) {
         for (auto & p1 : Player::playerQueue) {
             p1->update(time);
-            if (!checkPos(p1->position.x, p1->position.z))
+            if (!Player::checkPos(p1->position.x, p1->position.z))
                 p1->edgeSolve();
         }
         for (auto & p1 : Player::playerQueue) {
@@ -221,7 +290,7 @@ void GameLogic::checkPlayer(float time, Player* player) {
         }
     } else {
         player->update(time);
-        if (!checkPos(player->position.x, player->position.z)) {
+        if (!Player::checkPos(player->position.x, player->position.z)) {
             player->edgeSolve();
         }
         for (auto &p2 : Player::playerQueue) {
@@ -244,7 +313,11 @@ void GameLogic::checkBullet(Bullet* bullet, float time) {
                 continue;
             }
             player->hp--;
-            if (player->hp <= 0) player->alive = false;
+            player->attacked = true;
+            if (player->hp <= 0) {
+                player->alive = false;
+                player->deadBomb(time);
+            }
             player->halfLength = 0.6f + 0.4f * (float)player->hp / 50.0f;
             bullet->alive = false;
         }

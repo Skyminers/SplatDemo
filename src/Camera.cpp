@@ -81,7 +81,7 @@ void Camera::processKey(cameraMovement key, float deltaTime, float nowTime) {
             break;
         case DOWN:
             if (!bindToPlayer) Position -= Up * moveLen;
-            //else player->position -= Up * moveLen;
+            else player->dive(nowTime);
             break;
         case CAMERA_PLAYER:
             shooting = false;

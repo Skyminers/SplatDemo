@@ -10,7 +10,7 @@ glm::vec3 Object::getColor() {
     return color;
 }
 
-bool Object::isAlive() {
+bool Object::isAlive() const {
     return alive;
 }
 
@@ -18,15 +18,19 @@ unsigned int Object::getID() {
     return id;
 }
 
-float Cube::rotateAngle() {
+float Cube::rotateAngle() const {
     return -yaw;
 }
 
-float Cube::getHalfLength() {
+float Cube::getHalfLength() const {
     return halfLength;
 }
 
-float Sphere::getRadius() {
+float Cube::getFateY() const {
+    return fateY;
+}
+
+float Sphere::getRadius() const {
     return radius;
 }
 
@@ -38,12 +42,12 @@ glm::vec3 PhysicalEngine::rotate(glm::vec3 pos, glm::vec3 rotatePoint, float ang
     return glm::vec3(rotMat * glm::vec4(pos, 1.0f));
 }
 
-bool PhysicalEngine::inBox(glm::vec3 pos, glm::vec3 boxPoint, float halfLength, float angle, float r) {
+bool PhysicalEngine::inBox(glm::vec3 pos, glm::vec3 boxPoint, float halfLength, float fateY, float angle, float r) {
     glm::vec3 newPos = rotate(pos, boxPoint, angle);
     float max_x = boxPoint.x + halfLength;
     float min_x = boxPoint.x - halfLength;
-    float max_y = boxPoint.y + halfLength;
-    float min_y = boxPoint.y - halfLength;
+    float max_y = boxPoint.y + halfLength * fateY;
+    float min_y = boxPoint.y - halfLength * fateY;
     float max_z = boxPoint.z + halfLength;
     float min_z = boxPoint.z - halfLength;
     if (newPos.x < min_x - r || newPos.x > max_x + r) return false;
@@ -163,8 +167,9 @@ bool PhysicalEngine::intersect(Cube a, Cube b) {
 
 bool PhysicalEngine::intersect(Cube a, Sphere b) {
     float ahl = a.getHalfLength();
+    float fateY = a.getFateY();
     glm::vec3 bpos = b.getPos();
-    glm::vec3 apos = a.getPos() + glm::vec3(0, ahl, 0);
+    glm::vec3 apos = a.getPos() + glm::vec3(0, ahl * fateY, 0);
     float angle_a = a.rotateAngle();
-    return inBox(bpos, apos, ahl, angle_a, b.getRadius());
+    return inBox(bpos, apos, ahl, fateY, angle_a, b.getRadius());
 }

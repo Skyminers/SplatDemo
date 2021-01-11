@@ -9,6 +9,7 @@
 #include <random>
 #include <PhysicalEngine.h>
 #include <defineList.h>
+#include <Floor.h>
 
 using namespace std;
 
@@ -44,21 +45,26 @@ public:
     void updateNew();
     void updateVectors();
     void randomAct(float time, float deltaTime);
-    static bool checkPos(float x, float z);
     void edgeSolve();
+    void dive(float time);
+    bool& Attacked();
+    void deadBomb(float time);
+    static bool checkPos(float x, float z);
+    static int getColorID(float x, float z);
 
 private:
     glm::vec3 Front, Right, position_new, position_old, gunDirection;
     float frontV = 0.0f, rightV = 0.0f, moveTime = 0.0f;
     float yaw_new = 0.0f, yaw_old = 0.0f, pitch_new = 30.0f, pitch_old = 30.0f;
     int hp = 50, jumpPhase = 0;
-    bool inControl = false;
-    float jumpTime = 0.0f, velocityY = 0.0f;
+    bool inControl = false, diving = false, attacked = false;
+    float jumpTime = 0.0f, velocityY = 0.0f, pressTime = 0.0f;
 
 };
 
 class GameLogic {
 public:
+    static vector<glm::vec3> colors;
     static int playerNum;
     static int teamNum;
     static void init(int teamNum, int playerNum);

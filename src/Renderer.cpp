@@ -73,13 +73,21 @@ void renderPlayer(Player* player, float time) {
     playerShader->useProgram();
     glm::mat4 model;
     float ratio = player->getHalfLength();
-    model = glm::translate(model, player->getPos() + glm::vec3(0, ratio, 0));
-    model = glm::scale(model, glm::vec3(ratio, ratio, ratio));
+    float fateY = player->getFateY();
+    model = glm::translate(model, player->getPos() + glm::vec3(0, fateY * ratio, 0));
+    model = glm::scale(model, glm::vec3(ratio, fateY * ratio, ratio));
     model = glm::rotate(model, glm::radians(player->rotateAngle()), glm::vec3(0, 1, 0));
     playerShader->setMat4("projection", projection);
     playerShader->setMat4("view", view);
     playerShader->setMat4("model", model);
-    playerShader->setVec3("color", player->getColor());
+    glm::vec3 c;
+    if (player->Attacked()) {
+        c = glm::vec3(1, 0, 0);
+        player->Attacked() = false;
+    } else {
+        c = player->getColor();
+    }
+    playerShader->setVec3("color", c);
     drawPlayer();
 }
 
@@ -95,8 +103,9 @@ void renderShadowDepth(vector<Player*> playerList, vector<Bullet*> bulletList){
     for(auto player: playerList){
         glm::mat4 model;
         float ratio = player->getHalfLength();
-        model = glm::translate(model, player->getPos() + glm::vec3(0, ratio, 0));
-        model = glm::scale(model, glm::vec3(ratio, ratio, ratio));
+        float fateY = player->getFateY();
+        model = glm::translate(model, player->getPos() + glm::vec3(0, fateY * ratio, 0));
+        model = glm::scale(model, glm::vec3(ratio, fateY * ratio, ratio));
         model = glm::rotate(model, glm::radians(player->rotateAngle()), glm::vec3(0, 1, 0));
         shadowShader->setMat4("model", model);
         drawPlayer();
