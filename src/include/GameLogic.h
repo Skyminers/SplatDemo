@@ -49,6 +49,7 @@ public:
     void dive(float time);
     bool& Attacked();
     void deadBomb(float time, unsigned int tid);
+    unsigned int getDefeater() const;
     static bool checkPos(float x, float z);
     static int getColorID(float x, float z);
 
@@ -59,6 +60,7 @@ private:
     int hp = 50, jumpPhase = 0;
     bool inControl = false, diving = false, attacked = false;
     float jumpTime = 0.0f, velocityY = 0.0f, pressTime = 0.0f;
+    unsigned int defeater = 0;
 
 };
 

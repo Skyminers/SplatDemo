@@ -140,6 +140,7 @@ void GameWindow::run() {
         }
         for (auto player = Player::playerQueue.begin(); player != Player::playerQueue.end();) {
             if (!(*player)->isAlive()) {
+                (*player)->deadBomb(currentFrame, (*player)->getDefeater());
                 Player::playerQueue.erase(player);
                 continue;
             }

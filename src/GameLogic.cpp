@@ -143,7 +143,7 @@ const float MINY = 0.05f;
 
 void Player::update(float time) {
     float deltaTime = time - moveTime;
-    //if (!inControl) randomAct(time, deltaTime);
+    if (!inControl) randomAct(time, deltaTime);
     if (jumpPhase) jumpUpdate(time);
     if (time - pressTime > 0.2f) diving = false;
     int colorID = getColorID(position.x, position.z);
@@ -243,6 +243,10 @@ void Player::dive(float time) {
 
 bool& Player::Attacked() {
     return attacked;
+}
+
+unsigned int Player::getDefeater() const {
+    return defeater;
 }
 
 void Player::deadBomb(float time, unsigned int tid) {
@@ -357,7 +361,8 @@ void GameLogic::checkBullet(Bullet* bullet, float time) {
             player->attacked = true;
             if (player->hp == 0) {
                 player->alive = false;
-                player->deadBomb(time, bullet->teamid);
+                player->defeater = bullet->teamid;
+                //player->deadBomb(time, bullet->teamid);
             }
             player->halfLength = 0.6f + 0.4f * (float)player->hp / 50.0f;
             bullet->alive = false;
