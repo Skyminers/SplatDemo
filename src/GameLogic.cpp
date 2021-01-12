@@ -80,14 +80,15 @@ void Player::jumpUpdate(float time) {
     position_new.y = height;
 }
 
-void Player::shoot(glm::vec3 front, float time, unsigned int tid, bool flag, float speed) {
-    if (diving) return;
-    if (!alive && !flag) return;
+bool Player::shoot(glm::vec3 front, float time, unsigned int tid, bool flag, float speed) {
+    if (diving) return false;
+    if (!alive && !flag) return false;
     glm::vec3 pos = position + front * 1.0f + glm::vec3(u(e), uu(e) + 0.5f, u(e));
     if (flag)
         Bullet::bulletQueue.push_back(new Bullet(pos, front, time, tid, GameLogic::colors[tid], speed));
     else
         Bullet::bulletQueue.push_back(new Bullet(pos, front, time, teamid, color));
+    return true;
 }
 
 int Player::HP() const {
@@ -142,7 +143,7 @@ const float MINY = 0.05f;
 
 void Player::update(float time) {
     float deltaTime = time - moveTime;
-    if (!inControl) randomAct(time, deltaTime);
+    //if (!inControl) randomAct(time, deltaTime);
     if (jumpPhase) jumpUpdate(time);
     if (time - pressTime > 0.2f) diving = false;
     int colorID = getColorID(position.x, position.z);

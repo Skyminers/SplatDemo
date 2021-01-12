@@ -22,7 +22,7 @@ void musicInit(std::string bgmFilename, std::string shootFilename, std::string b
 
 void playBGM(){
     #ifdef __APPLE__
-    sound->setSoundVolume(0.6);
+    sound->setSoundVolume(0.4);
     sound->play2D(bgmFilename.c_str(), true);
     #endif
 }

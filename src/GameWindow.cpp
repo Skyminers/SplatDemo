@@ -130,13 +130,6 @@ void GameWindow::run() {
         processInput(window);
 
         GameLogic::checkPlayer(currentFrame);
-        for (auto player = Player::playerQueue.begin(); player != Player::playerQueue.end();) {
-            if (!(*player)->isAlive()) {
-                Player::playerQueue.erase(player);
-                continue;
-            }
-            player++;
-        }
         for (auto bullet = Bullet::bulletQueue.begin(); bullet != Bullet::bulletQueue.end();) {
             GameLogic::checkBullet(*bullet, currentFrame);
             if (!(*bullet)->isAlive()) {
@@ -144,6 +137,13 @@ void GameWindow::run() {
                 continue;
             }
             bullet++;
+        }
+        for (auto player = Player::playerQueue.begin(); player != Player::playerQueue.end();) {
+            if (!(*player)->isAlive()) {
+                Player::playerQueue.erase(player);
+                continue;
+            }
+            player++;
         }
         for (auto particle = Particle::particleQueue.begin(); particle != Particle::particleQueue.end();) {
             //GameLogic::checkParticle(*bullet, currentFrame);

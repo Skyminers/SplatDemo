@@ -13,7 +13,7 @@ int main() {
     musicInit("../resource/mp3/bgm.wav",
               "../resource/mp3/shoot.wav",
               "../resource/mp3/boom.wav");
-    GameLogic::init(2, 3);
+    GameLogic::init(2,3);
 
     playBGM();
 
