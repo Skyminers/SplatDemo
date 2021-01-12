@@ -185,8 +185,15 @@ void Player::update(float time) {
         deltaTime = min(fabs(len) / fabs(floorA * deltaTime), deltaTime);
         if (len > 0.1f) {
             position_new += V * deltaTime + A * deltaTime * deltaTime / 2.0f;
-            if(diving) Particle::particleQueue.push_back(
-                new Particle(position, glm::vec3(0,1,0),0.3,color,0.1));
+            if(diving) {
+                glm::vec3 posoffset(-V.z-V.x,0,V.x-V.z);
+                float ratio=1.25;
+                Particle::particleQueue.push_back(
+                    new Particle(position+glm::normalize(posoffset)*ratio, glm::vec3(0,1,0),0.3,color,0.1));
+                posoffset = glm::vec3(V.z-V.x,0,-V.x-V.z);
+                Particle::particleQueue.push_back(
+                    new Particle(position+glm::normalize(posoffset)*ratio, glm::vec3(0,1,0),0.3,color,0.1));
+            }
         }
         V += A * deltaTime;
     }

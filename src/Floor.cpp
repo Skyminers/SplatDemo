@@ -178,6 +178,9 @@ void plant(float x, float z, glm::vec3 color){
         floorVertices[idStartPos + 3] = color[0];
         floorVertices[idStartPos + 4] = color[1];
         floorVertices[idStartPos + 5] = color[2];
+        // floorVertices[idStartPos + 3] = color[0]*colorAlpha + floorVertices[idStartPos + 3]*(1-colorAlpha);
+        // floorVertices[idStartPos + 4] = color[1]*colorAlpha + floorVertices[idStartPos + 4]*(1-colorAlpha);
+        // floorVertices[idStartPos + 5] = color[2]*colorAlpha + floorVertices[idStartPos + 5]*(1-colorAlpha);
 
         // find adjacent
         for(int i = 0;i < 4; ++ i){
