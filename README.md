@@ -35,6 +35,8 @@
 
 5. 人物和子弹的阴影。
 
+6. 人物在移动时身后会产生粒子效果。
+
 ### **（三）音乐效果**
 1. 背景音乐
 
@@ -149,15 +151,141 @@ bool PhysicalEngine::intersect(glm::vec3 p1, glm::vec3 p2, glm::vec3 boxPoint, f
     
     球体的生成利用了之前实验中的球体类，将生成的vertex和element信息存入了obj文件中。
 
+**地板的绘制**
+
+    地板采用正方形网格，用大小为 (301, 301) 的网格覆盖坐标范围 (-50 .. 50, -50 .. 50)。
+
+    正常来说：每个正方形利用两个对角三角形来进行绘制可以绘制完整的网格。
+
+    但是在实际调试中我们发现：如果只绘制每个正方形 3/4 的部分，可以营造出透明地板的效果，而且在视觉上有更好的体验。
+
+```C++
+for(int i = 0; i < FLOOR_SIZE; ++i) {
+    for (int j = 0; j < FLOOR_SIZE; ++j) {
+        int idx = i * (FLOOR_SIZE + 1) + j;
+        int idy = idx + 1;
+        int idu = idx + (FLOOR_SIZE + 1);
+        int idv = idy + (FLOOR_SIZE + 1);
+
+        // a triangle
+        floorElement.push_back(idx);
+        floorElement.push_back(idy);
+        floorElement.push_back(idu);
+
+        // a triangle
+//      floorElement.push_back(idu);
+//      floorElement.push_back(idv);
+//      floorElement.push_back(idy);
+
+//      an amazing effect !!!
+        floorElement.push_back(idx);
+        floorElement.push_back(idy);
+        floorElement.push_back(idv);
+    }
+}
+```
+
+**涂色区域的判定**
+
+    这部分判定从理论上来说是属于地板绘制模块，但是由于这部分比较重要，所以单独来描述。
+
+    对于涂色区域，我们定义了一个外半径(OUT_RADIUS)、一个内半径(IN_RADIUS)。
+
+    当子弹落到地面时，首先通过相应的数学运算将其转化为网格坐标，然后将该网格坐标作为起点进行 BFS。
+
+    设某一个被搜索到的点与初始搜索点距离为 d:
+
+        1. d < IN_RADIUS : 设置该点涂色强度为 1，并且设置地板颜色为子弹颜色
+        2. d > OUT_RADIUS : continue
+        3. others : 按照 d - IN_RADIUS 的值，将该点涂色强度进行差值处理，并且设置地板颜色为子弹颜色
+
+    对应的 shader 中会依据涂色强度来对涂色进行噪声处理，已达成较为真实的油漆质感。
+```c++
+    while(!q.empty()){
+        BulletPos nowPos = q.front();
+        q.pop();
+
+        if(!nowPos.checkPos()) continue;
+
+        // distance between this position and bullet position
+        float dis = BulletPos::distance(nowPos, src);
+
+        // check whether need render
+        if(dis > OUT_RADIUS*OUT_RADIUS) continue;
+
+        int id = nowPos.mapToId();
+        int idStartPos = id * FLOOR_ELEMENT_COUNT;
+
+        float& colorAlpha = floorVertices[idStartPos + 6];
+        if(dis <= IN_RADIUS*IN_RADIUS){
+            colorAlpha = 1.0f;
+        }else{ // calc difference
+            float tFactor = 1.0f/ (OUT_RADIUS - IN_RADIUS);
+            float d = sqrt(dis);
+            float t = 1.0f - (d - IN_RADIUS)*tFactor;
+
+            colorAlpha = std::min(colorAlpha + t, 1.0f);
+        }
+
+        floorVertices[idStartPos + 3] = color[0];
+        floorVertices[idStartPos + 4] = color[1];
+        floorVertices[idStartPos + 5] = color[2];
+
+        // find adjacent
+        for(int i = 0;i < 4; ++ i){
+            BulletPos nxt(nowPos + BulletPos(dx[i], dy[i]));
+            if(s.find(nxt) == s.end()){
+                s.insert(nxt);
+                q.push(nxt);
+            }
+        }
+    }
+```
+
+
+**光照的实现**
+
+[参考教程(learnOpenGL-高级光照)](https://learnopengl-cn.github.io/05%20Advanced%20Lighting/01%20Advanced%20Lighting/)
+
+    本项目的光照使用了：Blinn-Phong 模型，代码参考了 learnOpenGL 上的教程，按照该教程实现的光照。
+
+    由于本次使用的天空盒有对应的太阳位置，所以光源设定在了天空盒所标识的太阳位置。
+
+    所以在地板为透明时，光照的反射与天空盒下面的水面反射融合在了一起，有较好的视觉效果。
+
+**阴影的实现**
+
+[参考教程(learnOpenGL-阴影映射)](https://learnopengl-cn.github.io/05%20Advanced%20Lighting/03%20Shadows/01%20Shadow%20Mapping/)
+
+    创建新的帧缓冲(深度缓冲)，将视角定位到光源位置，调整参数使得此时的投影矩阵为光源位置看向平面的正交投影矩阵。
+
+    将所有需要渲染阴影的物体渲染进该帧缓冲
+
+    渲染完毕后，将该缓冲的深度缓冲作为纹理传入地板渲染部分
+
+    在地板渲染中将要渲染的点通过相应正交矩阵进行映射，比较该点的深度和纹理中的深度来判断该点是否会被遮盖。
+
+**游戏音效的实现**
+
+    游戏音效使用了跨平台音效库 irrKlang
+
+    在游戏开始时播放 BGM (「シオカラ節」，喷射2 DLC 中与真三号对战的BGM)
+    
+    在自己操作角色进行射击时播放射击音效，有人物死亡时播放爆炸音效。
+
 ## 部署与运行
 
+本项目使用库：`glew 2.2.0`, `glfw3.3.2`, `irrKlang 1.6`, `glm 0.9.8.5`, `stb_image`
 
+由于我们组有 windows 和 macOS 两种系统，所以我们选择了使用 vscode(windows) + CLion(macOS) ，使用 CmakeLists 的方式来编译项目。
 
+运行时程序需要从外部读取：模型文件、纹理文件与音效文件，为了便于调试，我们在程序中通过间接路径指定了文件路径，所以程序只能在 cmake-build-debug 运行，不然很可能出现找不到文件的错误。
 
+如果需要编译该项目，需要配置 `glew`、`glfw` 以及 `irrKlang 1.6` 的相关环境。
 
 ## 小组分工
 
-刘一辰（3180102886）：
+刘一辰（3180102886）：地板渲染、涂色区域判定、光照渲染、实时阴影渲染、游戏音效
 
 周义涵（3180105344）：
 
